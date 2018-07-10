@@ -1,9 +1,8 @@
 import {NgLogLevel} from './ng-log-level'
 import {InjectionToken} from '@angular/core'
+import {INgLogConfig} from './ng-log-config.service'
 
-export interface INgLogOptions {
-  logLevel: NgLogLevel
-}
+export type INgLogOptions = Partial<INgLogConfig>
 
 export const defaultNgLogOptions: INgLogOptions = {
   logLevel: NgLogLevel.debug

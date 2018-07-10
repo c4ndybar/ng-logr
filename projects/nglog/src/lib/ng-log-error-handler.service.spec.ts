@@ -28,12 +28,18 @@ describe('NgLogErrorHandler', () => {
     return TestBed.get(ErrorHandler)
   }
 
-  it('logs caught exceptions using nglog', () => {
+  it('logs unhandled exceptions using nglog', () => {
     const handler = getHandler()
     const error = new Error('boom')
 
     handler.handleError(error)
 
-    expect(nglogSpy.error).toHaveBeenCalledWith(error)
+    expect(nglogSpy.error).toHaveBeenCalledWith('ERROR', error)
+  })
+
+  it('extends ErrorHandler', () => {
+    const handler = getHandler()
+
+    expect(handler).toEqual(jasmine.any(ErrorHandler))
   })
 })

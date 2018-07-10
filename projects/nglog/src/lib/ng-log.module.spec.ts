@@ -5,6 +5,7 @@ import {defaultNgLogOptions, INgLogOptions, NgLogOptions} from './ng-log-options
 import {NgLogLevel} from './ng-log-level'
 import {NgLogErrorHandler} from './ng-log-error-handler.service'
 import {ErrorHandler} from '@angular/core'
+import {NgLogConfig} from './ng-log-config.service'
 
 describe('ng-log.module', () => {
   it('sets default NgLogOptions when none are provided', () => {
@@ -14,9 +15,9 @@ describe('ng-log.module', () => {
       ]
     })
 
-    const nglog = TestBed.get(NgLog)
+    const options = TestBed.get(NgLogOptions)
 
-    expect(nglog.options).toEqual(defaultNgLogOptions)
+    expect(options).toEqual(defaultNgLogOptions)
   })
 
   it('allows for the configuration to be overridden', () => {
@@ -31,9 +32,9 @@ describe('ng-log.module', () => {
       providers: [{provide: NgLogOptions, useValue: options}]
     })
 
-    const nglog = TestBed.get(NgLog)
+    const actualOptions = TestBed.get(NgLogOptions)
 
-    expect(nglog.options).toEqual(options)
+    expect(actualOptions).toEqual(options)
   })
 
   it('provides the error handler', () => {

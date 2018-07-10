@@ -1,16 +1,20 @@
 import {ErrorHandler, Injectable, Injector} from '@angular/core'
-import {HttpErrorResponse} from '@angular/common/http'
 import {NgLog} from './ng-log.service'
 
 @Injectable()
-export class NgLogErrorHandler implements ErrorHandler {
+export class NgLogErrorHandler extends ErrorHandler {
+  private nglog: NgLog
   constructor(private injector: Injector) {
+    super()
+    this.nglog = this.injector.get(NgLog)
   }
 
-  handleError(error: Error | HttpErrorResponse) {
-    const nglog = this.injector.get(NgLog)
+  handleError(error: any) {
+    error.ngErrorLogger = (console: Console, ...values: any[]) => {
+      this.nglog.error(...values)
+    }
 
-    nglog.error(error)
+    super.handleError(error)
   }
 }
 

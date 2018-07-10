@@ -1,7 +1,8 @@
 import {TestBed} from '@angular/core/testing'
 import {INgLog, NgLog} from './ng-log.service'
 import {NgLogLevel} from './ng-log-level'
-import {INgLogOptions, NgLogOptions} from './ng-log-options'
+import {defaultNgLogOptions, INgLogOptions, NgLogOptions} from './ng-log-options'
+import {NgLogConfig} from './ng-log-config.service'
 
 describe('NgLog', () => {
   let service: INgLog
@@ -18,7 +19,7 @@ describe('NgLog', () => {
   function getService(options: INgLogOptions): NgLog {
     TestBed.configureTestingModule({
       providers: [NgLog,
-        {provide: NgLogOptions, useValue: options}
+        {provide: NgLogConfig, useValue: options}
       ]
     })
 
@@ -27,7 +28,7 @@ describe('NgLog', () => {
 
   describe('with default options', () => {
     beforeEach(() => {
-      service = getService(undefined)
+      service = getService(defaultNgLogOptions)
     })
 
     it('should be created', () => {
@@ -62,6 +63,36 @@ describe('NgLog', () => {
       service.error('error message')
 
       expect(errorSpy).toHaveBeenCalledWith('error message')
+    })
+
+    it('calls console.log with multiple params', () => {
+      service.log('log message', 'and more log')
+
+      expect(logSpy).toHaveBeenCalledWith('log message', 'and more log')
+    })
+
+    it('calls console.debug with multiple params', () => {
+      service.debug('debug message', 'and more debug')
+
+      expect(debugSpy).toHaveBeenCalledWith('debug message', 'and more debug')
+    })
+
+    it('calls console.warn with multiple params', () => {
+      service.warn('warn message', 'and more warn')
+
+      expect(warnSpy).toHaveBeenCalledWith('warn message', 'and more warn')
+    })
+
+    it('calls console.info with multiple params', () => {
+      service.info('info message', 'and more info')
+
+      expect(infoSpy).toHaveBeenCalledWith('info message', 'and more info')
+    })
+
+    it('calls console.error with multiple params', () => {
+      service.error('error message', 'and more error')
+
+      expect(errorSpy).toHaveBeenCalledWith('error message', 'and more error')
     })
   })
 

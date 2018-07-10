@@ -1,55 +1,46 @@
-import {Inject, Injectable} from '@angular/core'
+import {Injectable} from '@angular/core'
 import {NgLogLevel} from './ng-log-level'
-import {defaultNgLogOptions, INgLogOptions, NgLogOptions} from './ng-log-options'
+import {NgLogConfig} from './ng-log-config.service'
 
 export interface INgLog {
-  readonly options: INgLogOptions
-
-  log(message: any): void
-
-  error(message: any): void
-
-  info(message: any): void
-
-  warn(message: any): void
-
-  debug(message: any): void
+  debug(message?: any, ...params: any[]): void
+  info(message?: any, ...params: any[]): void
+  log(message?: any, ...params: any[]): void
+  warn(message?: any, ...params: any[]): void
+  error(message?: any, ...params: any[]): void
 }
 
 @Injectable({providedIn: 'root'})
 export class NgLog implements INgLog {
 
-  constructor(@Inject(NgLogOptions) public readonly options: INgLogOptions) {
-    if (!this.options) {
-      this.options = defaultNgLogOptions
+  constructor(private ngLogConfig: NgLogConfig) {
+  }
+
+  debug(message?: any, ...params: any[]): void {
+    if (this.ngLogConfig.logLevel === NgLogLevel.debug) {
+      console.debug(message, ...params)
     }
   }
 
-  debug(message: any): void {
-    if (this.options.logLevel === NgLogLevel.debug) {
-      console.debug(message)
+  info(message?: any, ...params: any[]): void {
+    if (this.ngLogConfig.logLevel <= NgLogLevel.info) {
+      console.info(message, ...params)
     }
   }
 
-  info(message: any): void {
-    if (this.options.logLevel <= NgLogLevel.info) {
-      console.info(message)
+  log(message?: any, ...params: any[]): void {
+    if (this.ngLogConfig.logLevel <= NgLogLevel.log) {
+      console.log(message, ...params)
     }
   }
 
-  log(message: any): void {
-    if (this.options.logLevel <= NgLogLevel.log) {
-      console.log(message)
+  warn(message?: any, ...params: any[]): void {
+    if (this.ngLogConfig.logLevel <= NgLogLevel.warn) {
+      console.warn(message, ...params)
     }
   }
 
-  warn(message: any): void {
-    if (this.options.logLevel <= NgLogLevel.warn) {
-      console.warn(message)
-    }
-  }
-
-  error(message: any) {
-    console.error(message)
+  error(message?: any, ...params: any[]) {
+    console.error(message, ...params)
   }
 }
