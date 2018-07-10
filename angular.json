@@ -121,6 +121,46 @@
           }
         }
       }
+    },
+    "nglog": {
+      "root": "projects/nglog",
+      "sourceRoot": "projects/nglog/src",
+      "projectType": "library",
+      "prefix": "log",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/nglog/tsconfig.lib.json",
+            "project": "projects/nglog/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "project": "projects/nglog/ng-package.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/nglog/src/test.ts",
+            "tsConfig": "projects/nglog/tsconfig.spec.json",
+            "karmaConfig": "projects/nglog/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/nglog/tsconfig.lib.json",
+              "projects/nglog/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "nglog-app"

@@ -1,16 +1,21 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser'
+import { NgModule } from '@angular/core'
+import { AppComponent } from './app.component'
+import {NgLogOptions, INgLogOptions, NgLogLevel, NgLogModule} from 'nglog'
 
-import { AppComponent } from './app.component';
+const options: INgLogOptions = {
+  logLevel: NgLogLevel.debug
+}
 
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    NgLogModule,
   ],
-  providers: [],
+  providers: [{provide: NgLogOptions, useValue: options}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
