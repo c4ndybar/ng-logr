@@ -1,180 +1,143 @@
 import {TestBed} from '@angular/core/testing'
 import {INgLog, NgLog} from './ng-log.service'
-import {NgLogLevel} from './ng-log-level'
 import {defaultNgLogOptions, INgLogOptions, NgLogOptions} from './ng-log-options'
-import {NgLogConfig} from './ng-log-config.service'
+import {INgLogHandler} from './log-handlers/ng-log-handler'
+import {NgLogLevel} from './ng-log-level'
 
 describe('NgLog', () => {
   let service: INgLog
-  let logSpy, warnSpy, infoSpy, debugSpy, errorSpy
+  let handlerSpy: INgLogHandler
+  let otherHandlerSpy: INgLogHandler
 
   beforeEach(() => {
-    logSpy = spyOn(console, 'log')
-    warnSpy = spyOn(console, 'warn')
-    infoSpy = spyOn(console, 'info')
-    debugSpy = spyOn(console, 'debug')
-    errorSpy = spyOn(console, 'error')
+    handlerSpy = jasmine.createSpyObj('handler', ['debug', 'info', 'log', 'warn', 'error'])
+    otherHandlerSpy = jasmine.createSpyObj('otherHandler', ['debug', 'info', 'log', 'warn', 'error'])
   })
 
   function getService(options: INgLogOptions): NgLog {
     TestBed.configureTestingModule({
       providers: [NgLog,
-        {provide: NgLogConfig, useValue: options}
+        {provide: NgLogOptions, useValue: options}
       ]
     })
 
     return TestBed.get(NgLog)
   }
 
-  describe('with default options', () => {
+  describe('calls the provided handler', () => {
     beforeEach(() => {
-      service = getService(defaultNgLogOptions)
+      const options = {
+        logHandlers: [handlerSpy, otherHandlerSpy]
+      }
+      service = getService(options)
     })
 
     it('should be created', () => {
       expect(service).toBeTruthy()
     })
 
-    it('calls console.log', () => {
+    it('calls handler.log', () => {
       service.log('log message')
 
-      expect(logSpy).toHaveBeenCalledWith('log message')
+      expect(handlerSpy.log).toHaveBeenCalledWith('log message')
+      expect(otherHandlerSpy.log).toHaveBeenCalledWith('log message')
     })
 
-    it('calls console.debug', () => {
+    it('calls handler.debug', () => {
       service.debug('debug message')
 
-      expect(debugSpy).toHaveBeenCalledWith('debug message')
+      expect(handlerSpy.debug).toHaveBeenCalledWith('debug message')
+      expect(otherHandlerSpy.debug).toHaveBeenCalledWith('debug message')
     })
 
-    it('calls console.warn', () => {
+    it('calls handler.warn', () => {
       service.warn('warn message')
 
-      expect(warnSpy).toHaveBeenCalledWith('warn message')
+      expect(handlerSpy.warn).toHaveBeenCalledWith('warn message')
+      expect(otherHandlerSpy.warn).toHaveBeenCalledWith('warn message')
     })
 
-    it('calls console.info', () => {
+    it('calls handler.info', () => {
       service.info('info message')
 
-      expect(infoSpy).toHaveBeenCalledWith('info message')
+      expect(handlerSpy.info).toHaveBeenCalledWith('info message')
+      expect(otherHandlerSpy.info).toHaveBeenCalledWith('info message')
     })
 
-    it('calls console.error', () => {
+    it('calls handler.error', () => {
       service.error('error message')
 
-      expect(errorSpy).toHaveBeenCalledWith('error message')
+      expect(handlerSpy.error).toHaveBeenCalledWith('error message')
+      expect(otherHandlerSpy.error).toHaveBeenCalledWith('error message')
     })
 
-    it('calls console.log with multiple params', () => {
+    it('calls handler.log with multiple params', () => {
       service.log('log message', 'and more log')
 
-      expect(logSpy).toHaveBeenCalledWith('log message', 'and more log')
+      expect(handlerSpy.log).toHaveBeenCalledWith('log message', 'and more log')
+      expect(otherHandlerSpy.log).toHaveBeenCalledWith('log message', 'and more log')
     })
 
-    it('calls console.debug with multiple params', () => {
+    it('calls handler.debug with multiple params', () => {
       service.debug('debug message', 'and more debug')
 
-      expect(debugSpy).toHaveBeenCalledWith('debug message', 'and more debug')
+      expect(handlerSpy.debug).toHaveBeenCalledWith('debug message', 'and more debug')
+      expect(otherHandlerSpy.debug).toHaveBeenCalledWith('debug message', 'and more debug')
     })
 
-    it('calls console.warn with multiple params', () => {
+    it('calls handler.warn with multiple params', () => {
       service.warn('warn message', 'and more warn')
 
-      expect(warnSpy).toHaveBeenCalledWith('warn message', 'and more warn')
+      expect(handlerSpy.warn).toHaveBeenCalledWith('warn message', 'and more warn')
+      expect(otherHandlerSpy.warn).toHaveBeenCalledWith('warn message', 'and more warn')
     })
 
-    it('calls console.info with multiple params', () => {
+    it('calls handler.info with multiple params', () => {
       service.info('info message', 'and more info')
 
-      expect(infoSpy).toHaveBeenCalledWith('info message', 'and more info')
+      expect(handlerSpy.info).toHaveBeenCalledWith('info message', 'and more info')
+      expect(otherHandlerSpy.info).toHaveBeenCalledWith('info message', 'and more info')
     })
 
-    it('calls console.error with multiple params', () => {
+    it('calls handler.error with multiple params', () => {
       service.error('error message', 'and more error')
 
-      expect(errorSpy).toHaveBeenCalledWith('error message', 'and more error')
+      expect(handlerSpy.error).toHaveBeenCalledWith('error message', 'and more error')
+      expect(otherHandlerSpy.error).toHaveBeenCalledWith('error message', 'and more error')
     })
   })
 
-  describe('with options', () => {
-    it('debug allows everything', () => {
-      service = getService({logLevel: NgLogLevel.debug})
+  describe('options', () => {
+    it('sets the handler log level to default if no level is provided', () => {
+      const options = {
+        logHandlers: [handlerSpy]
+      }
 
-      service.debug('debug message')
-      service.info('info message')
-      service.log('log message')
-      service.warn('warn message')
-      service.error('error message')
+      service = getService(options)
 
-      expect(debugSpy).toHaveBeenCalledWith('debug message')
-      expect(infoSpy).toHaveBeenCalledWith('info message')
-      expect(logSpy).toHaveBeenCalledWith('log message')
-      expect(warnSpy).toHaveBeenCalledWith('warn message')
-      expect(errorSpy).toHaveBeenCalledWith('error message')
+      expect((<any>service).logHandlers[0].logLevel).toEqual(defaultNgLogOptions.logLevel)
     })
 
-    it('shows info and up when loglevel is info', () => {
-      service = getService({logLevel: NgLogLevel.info})
+    it('uses the handler log level if it is provided', () => {
+      handlerSpy.logLevel = NgLogLevel.error
 
-      service.debug('debug message')
-      service.info('info message')
-      service.log('log message')
-      service.warn('warn message')
-      service.error('error message')
+      const options = {
+        logHandlers: [handlerSpy]
+      }
 
-      expect(debugSpy).not.toHaveBeenCalled()
-      expect(infoSpy).toHaveBeenCalledWith('info message')
-      expect(logSpy).toHaveBeenCalledWith('log message')
-      expect(warnSpy).toHaveBeenCalledWith('warn message')
-      expect(errorSpy).toHaveBeenCalledWith('error message')
+      service = getService(options)
+
+      expect((<any>service).logHandlers[0].logLevel).toEqual(NgLogLevel.error)
     })
 
-    it('shows log and up when loglevel is log', () => {
-      service = getService({logLevel: NgLogLevel.log})
+    it('uses the default log handlers if no handlers are provided', () => {
+      const options = {
+        logLevel: NgLogLevel.error
+      }
 
-      service.debug('debug message')
-      service.info('info message')
-      service.log('log message')
-      service.warn('warn message')
-      service.error('error message')
+      service = getService(options)
 
-      expect(debugSpy).not.toHaveBeenCalled()
-      expect(infoSpy).not.toHaveBeenCalled()
-      expect(logSpy).toHaveBeenCalledWith('log message')
-      expect(warnSpy).toHaveBeenCalledWith('warn message')
-      expect(errorSpy).toHaveBeenCalledWith('error message')
-    })
-
-    it('shows warn and up when loglevel is warn', () => {
-      service = getService({logLevel: NgLogLevel.warn})
-
-      service.debug('debug message')
-      service.info('info message')
-      service.log('log message')
-      service.warn('warn message')
-      service.error('error message')
-
-      expect(debugSpy).not.toHaveBeenCalled()
-      expect(infoSpy).not.toHaveBeenCalled()
-      expect(logSpy).not.toHaveBeenCalled()
-      expect(warnSpy).toHaveBeenCalledWith('warn message')
-      expect(errorSpy).toHaveBeenCalledWith('error message')
-    })
-
-    it('shows only error messages when loglevel is error', () => {
-      service = getService({logLevel: NgLogLevel.error})
-
-      service.debug('debug message')
-      service.info('info message')
-      service.log('log message')
-      service.warn('warn message')
-      service.error('error message')
-
-      expect(debugSpy).not.toHaveBeenCalled()
-      expect(infoSpy).not.toHaveBeenCalled()
-      expect(logSpy).not.toHaveBeenCalled()
-      expect(warnSpy).not.toHaveBeenCalled()
-      expect(errorSpy).toHaveBeenCalledWith('error message')
+      expect((<any>service).logHandlers).toEqual(defaultNgLogOptions.logHandlers)
     })
   })
 })

@@ -1,11 +1,9 @@
 import {TestBed} from '@angular/core/testing'
 import {NgLogModule} from './ng-log.module'
-import {NgLog} from './ng-log.service'
 import {defaultNgLogOptions, INgLogOptions, NgLogOptions} from './ng-log-options'
 import {NgLogLevel} from './ng-log-level'
 import {NgLogErrorHandler} from './ng-log-error-handler.service'
 import {ErrorHandler} from '@angular/core'
-import {NgLogConfig} from './ng-log-config.service'
 
 describe('ng-log.module', () => {
   it('sets default NgLogOptions when none are provided', () => {

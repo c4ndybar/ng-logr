@@ -1,46 +1,60 @@
-import {Injectable} from '@angular/core'
-import {NgLogLevel} from './ng-log-level'
-import {NgLogConfig} from './ng-log-config.service'
+import {Inject, Injectable} from '@angular/core'
+import {defaultNgLogOptions, INgLogOptions, NgLogOptions} from './ng-log-options'
+import {defaultNgLogHandlerOptions, INgLogHandler} from './log-handlers/ng-log-handler'
 
 export interface INgLog {
   debug(message?: any, ...params: any[]): void
+
   info(message?: any, ...params: any[]): void
+
   log(message?: any, ...params: any[]): void
+
   warn(message?: any, ...params: any[]): void
+
   error(message?: any, ...params: any[]): void
 }
 
 @Injectable({providedIn: 'root'})
 export class NgLog implements INgLog {
+  private readonly logHandlers: INgLogHandler[]
 
-  constructor(private ngLogConfig: NgLogConfig) {
+  constructor(@Inject(NgLogOptions) options: INgLogOptions) {
+    options = Object.assign({}, defaultNgLogOptions, options)
+
+    this.logHandlers = options.logHandlers
+
+    for (const handler of this.logHandlers) {
+      Object.assign(handler, defaultNgLogHandlerOptions, {...handler})
+    }
   }
 
   debug(message?: any, ...params: any[]): void {
-    if (this.ngLogConfig.logLevel === NgLogLevel.debug) {
-      console.debug(message, ...params)
-    }
+    this.logHandlers.forEach((handler) => {
+      handler.debug(message, ...params)
+    })
   }
 
   info(message?: any, ...params: any[]): void {
-    if (this.ngLogConfig.logLevel <= NgLogLevel.info) {
-      console.info(message, ...params)
-    }
+    this.logHandlers.forEach((handler) => {
+      handler.info(message, ...params)
+    })
   }
 
   log(message?: any, ...params: any[]): void {
-    if (this.ngLogConfig.logLevel <= NgLogLevel.log) {
-      console.log(message, ...params)
-    }
+    this.logHandlers.forEach((handler) => {
+      handler.log(message, ...params)
+    })
   }
 
   warn(message?: any, ...params: any[]): void {
-    if (this.ngLogConfig.logLevel <= NgLogLevel.warn) {
-      console.warn(message, ...params)
-    }
+    this.logHandlers.forEach((handler) => {
+      handler.warn(message, ...params)
+    })
   }
 
   error(message?: any, ...params: any[]) {
-    console.error(message, ...params)
+    this.logHandlers.forEach((handler) => {
+      handler.error(message, ...params)
+    })
   }
 }
