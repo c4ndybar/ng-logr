@@ -8,7 +8,7 @@ import {NgLog} from 'nglog'
 })
 
 export class AppComponent {
-  constructor(public nglog: NgLog) {
+  constructor(private nglog: NgLog) {
   }
 
   throwError() {

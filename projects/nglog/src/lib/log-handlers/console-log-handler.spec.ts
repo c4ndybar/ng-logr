@@ -4,15 +4,6 @@ import {INgLogHandler} from './ng-log-handler'
 import {defaultNgLogOptions, INgLogOptions} from '../ng-log-options'
 
 describe('ConsoleLogHandler', () => {
-  it('has log level that is undefined by default', () => {
-    expect((new ConsoleLogHandler()).logLevel).toBeUndefined()
-  })
-
-  it('sets the log level if it is provided', () => {
-    const handler = new ConsoleLogHandler({logLevel: NgLogLevel.info})
-
-    expect(handler.logLevel).toEqual(NgLogLevel.info)
-  })
   let service: INgLogHandler
   let logSpy, warnSpy, infoSpy, debugSpy, errorSpy
 
@@ -27,6 +18,16 @@ describe('ConsoleLogHandler', () => {
   function getService(options: INgLogOptions): INgLogHandler {
     return new ConsoleLogHandler(options)
   }
+
+  it('has log level that is undefined by default', () => {
+    expect((new ConsoleLogHandler()).logLevel).toBeUndefined()
+  })
+
+  it('sets the log level if it is provided', () => {
+    const handler = new ConsoleLogHandler({logLevel: NgLogLevel.info})
+
+    expect(handler.logLevel).toEqual(NgLogLevel.info)
+  })
 
   describe('with default options', () => {
     beforeEach(() => {

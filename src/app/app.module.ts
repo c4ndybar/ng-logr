@@ -1,12 +1,15 @@
 import {BrowserModule} from '@angular/platform-browser'
 import {NgModule} from '@angular/core'
 import {AppComponent} from './app.component'
-import {INgLogOptions, NgLogLevel, NgLogModule, NgLogOptions} from 'nglog'
-import {ConsoleLogHandler} from 'nglog'
+import {ConsoleLogHandler, INgLogOptions, NgLogLevel, NgLogModule, NgLogOptions} from 'nglog'
+import {HttpLogHandler} from 'nglog'
 
 const options: INgLogOptions = {
   logLevel: NgLogLevel.debug,
-  logHandlers: [new ConsoleLogHandler({logLevel: NgLogLevel.info})]
+  logHandlers: [
+    new ConsoleLogHandler(),
+    new HttpLogHandler({logLevel: NgLogLevel.error})
+  ]
 }
 
 @NgModule({
