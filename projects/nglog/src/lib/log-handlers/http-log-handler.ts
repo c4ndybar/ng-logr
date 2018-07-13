@@ -1,11 +1,16 @@
-import {INgLogHandler} from './ng-log-handler'
+import {INgLogHandler, INgLogHandlerOptions} from './ng-log-handler'
 import {NgLogLevel} from '../ng-log-level'
-import {INgLogOptions} from '../ng-log-options'
+
+export interface IHttpLogHandlerOptions extends INgLogHandlerOptions {
+  httpPostRoute?: string
+}
 
 export class HttpLogHandler implements INgLogHandler {
   logLevel?: NgLogLevel
+  private httpPostRoute = '/log'
+  private XmlHttpRequest = XMLHttpRequest
 
-  constructor(options: INgLogOptions = {}) {
+  constructor(options: IHttpLogHandlerOptions = {}) {
     Object.assign(<any>this, options)
   }
 
@@ -29,35 +34,66 @@ export class HttpLogHandler implements INgLogHandler {
     this.postLog(NgLogLevel.warn, message, ...params)
   }
 
+
   private postLog(level: NgLogLevel, ...params: any[]) {
     if (level < this.logLevel) {
       return
     }
 
     try {
-      const xhr = new XMLHttpRequest()
-      xhr.open('POST', 'http://localhost:3201/logError', true)
-      xhr.setRequestHeader('Content-Type', 'application/json')
+      const httpRequest = new this.XmlHttpRequest()
+      httpRequest.open('POST', this.httpPostRoute, true)
+      httpRequest.setRequestHeader('Content-Type', 'application/json')
 
-      xhr.onreadystatechange = function () {
+      httpRequest.onreadystatechange = function () {
         if (this.readyState === XMLHttpRequest.DONE) {
-          if (this.status === 200) {
-          } else {
-            console.error('XHR failed', xhr)
-            console.error('Log was not posted - ', NgLogLevel[level], ...params)
+          if (this.status !== 200) {
+            console.error('XHR failed', httpRequest)
+            console.error('Log was not posted - ', NgLogLevel[level], params)
           }
         }
       }
 
-      const data = {
-        logLevel: NgLogLevel[level],
-        params
-      }
-
-      xhr.send(JSON.stringify(data))
+      const serialized = this.serializeXhrPayload(level, params)
+      httpRequest.send(serialized)
     } catch (err) {
       console.error('Error while trying to post log - ', err)
-      console.error('Log was not posted - ', NgLogLevel[level], ...params)
+      console.error('Log was not posted - ', NgLogLevel[level], params)
     }
+  }
+
+  private serializeXhrPayload(level: NgLogLevel, params: any) {
+    const cache = []
+
+    function enumerateErrorProperties(x, value) {
+      if (value instanceof Error) {
+        const error = {}
+
+        Object.getOwnPropertyNames(value).forEach(function (key) {
+          if (!['ngDebugContext', 'ngErrorLogger', 'DebugContext_'].includes(key)) {
+            error[key] = value[key]
+          }
+        })
+
+        value = error
+      }
+
+      if (typeof value === 'object' && value !== null) {
+        if (cache.indexOf(value) !== -1) {
+          return 'value omitted due to possible circular reference'
+        }
+        cache.push(value)
+      }
+
+      return value
+    }
+
+    const data = {
+      logLevel: NgLogLevel[level],
+      params
+    }
+
+    const serialized = JSON.stringify(data, enumerateErrorProperties)
+    return serialized
   }
 }
