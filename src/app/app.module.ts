@@ -8,7 +8,7 @@ const options: INgLogOptions = {
   logLevel: NgLogLevel.debug,
   logHandlers: [
     new ConsoleLogHandler(),
-    new HttpLogHandler({logLevel: NgLogLevel.error, httpPostRoute: 'http://localhost:3201/logError'})
+    new HttpLogHandler({logLevel: NgLogLevel.error, httpPostRoute: 'http://localhost:4201/logError'})
   ]
 }
 

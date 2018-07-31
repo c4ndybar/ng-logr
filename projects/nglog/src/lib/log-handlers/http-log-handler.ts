@@ -1,5 +1,6 @@
 import {INgLogHandler, INgLogHandlerOptions} from './ng-log-handler'
 import {NgLogLevel} from '../ng-log-level'
+import stringify from 'fast-safe-stringify'
 
 export interface IHttpLogHandlerOptions extends INgLogHandlerOptions {
   httpPostRoute?: string
@@ -34,7 +35,6 @@ export class HttpLogHandler implements INgLogHandler {
     this.postLog(NgLogLevel.warn, message, ...params)
   }
 
-
   private postLog(level: NgLogLevel, ...params: any[]) {
     if (level < this.logLevel) {
       return
@@ -63,37 +63,30 @@ export class HttpLogHandler implements INgLogHandler {
   }
 
   private serializeXhrPayload(level: NgLogLevel, params: any) {
-    const cache = []
-
-    function enumerateErrorProperties(x, value) {
-      if (value instanceof Error) {
-        const error = {}
-
-        Object.getOwnPropertyNames(value).forEach(function (key) {
-          if (!['ngDebugContext', 'ngErrorLogger', 'DebugContext_'].includes(key)) {
-            error[key] = value[key]
-          }
-        })
-
-        value = error
-      }
-
-      if (typeof value === 'object' && value !== null) {
-        if (cache.indexOf(value) !== -1) {
-          return 'value omitted due to possible circular reference'
-        }
-        cache.push(value)
-      }
-
-      return value
-    }
-
     const data = {
       logLevel: NgLogLevel[level],
       params
     }
 
-    const serialized = JSON.stringify(data, enumerateErrorProperties)
-    return serialized
+    return (stringify as any)(data, this.replacer)
+  }
+
+  private replacer(_key, value) {
+    if (value instanceof Error) {
+      const error = {}
+
+      // we need to remove the angular properties from the error object because that can cause errors.
+      // we also need to make the stack and message properties enumerable
+      // this accomplishes both goals
+      Object.getOwnPropertyNames(value).forEach(function (key) {
+        if (!['ngDebugContext', 'ngErrorLogger', 'DebugContext_'].includes(key)) {
+          error[key] = value[key]
+        }
+      })
+
+      value = error
+    }
+
+    return value
   }
 }

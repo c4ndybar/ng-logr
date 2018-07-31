@@ -62,7 +62,22 @@ describe('HttpLogHandler', () => {
       const xhrSendPayload = JSON.parse(args[0])
       expect(xhrSendPayload).toEqual({
         logLevel: 'log',
-        params: [{nestedObj: {someVal: 5, circularRef: 'value omitted due to possible circular reference'}}]
+        params: [{nestedObj: {someVal: 5, circularRef: '[Circular]'}}]
+      })
+    })
+
+    it('handles infinite circular ref', () => {
+      const handler: any = getHandler()
+      const foo: any = {}
+      foo.anotherFoo = foo
+
+      handler.log(foo)
+
+      const args = (<any>xhrSpy).send.calls.argsFor(0)
+      const xhrSendPayload = JSON.parse(args[0])
+      expect(xhrSendPayload).toEqual({
+        logLevel: 'log',
+        params: [{anotherFoo: '[Circular]'}]
       })
     })
 
@@ -80,7 +95,7 @@ describe('HttpLogHandler', () => {
       })
     })
 
-    xit('does not incorrectly identify repeated object references as ciruclar references', () => {
+    it('does not incorrectly identify repeated object references as ciruclar references', () => {
       const handler: any = getHandler()
       const foo = {}
       const bar: any = {foo: foo, anotherFoo: foo}
@@ -96,7 +111,7 @@ describe('HttpLogHandler', () => {
     })
   })
 
-  describe('request completed', () => {
+  describe('handling response', () => {
     let errorSpy
 
     beforeEach(() => {
