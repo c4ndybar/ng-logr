@@ -1,8 +1,8 @@
 import {TestBed} from '@angular/core/testing'
 import {INgLog, NgLog} from './ng-log.service'
-import {defaultNgLogOptions, INgLogOptions, NgLogOptions} from './ng-log-options'
-import {INgLogHandler} from './log-handlers/ng-log-handler'
-import {NgLogLevel} from './ng-log-level'
+import {defaultNgLogOptions, INgLogOptions, NgLogOptions} from '../ng-log-options'
+import {INgLogHandler} from '../log-handlers/ng-log-handler'
+import {NgLogLevel} from '../ng-log-level'
 
 describe('NgLog', () => {
   let service: INgLog

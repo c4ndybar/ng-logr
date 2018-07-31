@@ -25,7 +25,7 @@ describe('HttpLogHandler', () => {
     expect(handler.logLevel).toEqual(NgLogLevel.info)
   })
 
-  it('attempts to send http request', () => {
+  it('sends an http request', () => {
     const handler: any = getHandler()
 
     handler.log('should send')
@@ -49,17 +49,51 @@ describe('HttpLogHandler', () => {
     expect(xhrSpy.setRequestHeader).toHaveBeenCalledWith('Content-Type', 'application/json')
   })
 
-  it('serializes circular references appropriately', () => {
-    const handler: any = getHandler()
-    const foo: any = {d: 5}
-    const bar: any = {a: 1, b: {c: {d: foo}}}
-    foo.e = bar
+  describe('circular references', () => {
+    it('serializes circular references appropriately', () => {
+      const handler: any = getHandler()
+      const foo: any = {someVal: 5}
+      const bar: any = {nestedObj: foo}
+      foo.circularRef = bar
 
-    handler.log(bar)
+      handler.log(bar)
 
-    const args = (<any>xhrSpy).send.calls.argsFor(0)
-    const xhrSendPayload = JSON.parse(args[0])
-    expect(xhrSendPayload).toEqual({logLevel: 'log', params: [{a: 1, b: {c: {d: {d: 5, e: 'value omitted due to possible circular reference'}}}}]})
+      const args = (<any>xhrSpy).send.calls.argsFor(0)
+      const xhrSendPayload = JSON.parse(args[0])
+      expect(xhrSendPayload).toEqual({
+        logLevel: 'log',
+        params: [{nestedObj: {someVal: 5, circularRef: 'value omitted due to possible circular reference'}}]
+      })
+    })
+
+    it('does not incorrectly identify repeated value references as ciruclar references', () => {
+      const handler: any = getHandler()
+      const bar: any = {one: 1, anotherOne: 1}
+
+      handler.log(bar)
+
+      const args = (<any>xhrSpy).send.calls.argsFor(0)
+      const xhrSendPayload = JSON.parse(args[0])
+      expect(xhrSendPayload).toEqual({
+        logLevel: 'log',
+        params: [bar],
+      })
+    })
+
+    xit('does not incorrectly identify repeated object references as ciruclar references', () => {
+      const handler: any = getHandler()
+      const foo = {}
+      const bar: any = {foo: foo, anotherFoo: foo}
+
+      handler.log(bar)
+
+      const args = (<any>xhrSpy).send.calls.argsFor(0)
+      const xhrSendPayload = JSON.parse(args[0])
+      expect(xhrSendPayload).toEqual({
+        logLevel: 'log',
+        params: [bar],
+      })
+    })
   })
 
   describe('request completed', () => {
@@ -127,7 +161,7 @@ describe('HttpLogHandler', () => {
       expect(xhrSpy.open).toHaveBeenCalledWith(jasmine.anything(), route, jasmine.anything())
     })
 
-    it('debug allows everything', () => {
+    it('debug sends http request for all log levels', () => {
       const handler = getHandler({logLevel: NgLogLevel.debug})
 
       handler.debug('debug message')
@@ -144,7 +178,7 @@ describe('HttpLogHandler', () => {
       expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"error"`))
     })
 
-    it('shows info and up when loglevel is info', () => {
+    it('sends http request for info and up when loglevel is info', () => {
       const handler = getHandler({logLevel: NgLogLevel.info})
 
       handler.debug('debug message')
@@ -160,7 +194,7 @@ describe('HttpLogHandler', () => {
       expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"error"`))
     })
 
-    it('shows log and up when loglevel is log', () => {
+    it('sends http request for log and up when loglevel is log', () => {
       const handler = getHandler({logLevel: NgLogLevel.log})
 
       handler.debug('debug message')
@@ -175,7 +209,7 @@ describe('HttpLogHandler', () => {
       expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"error"`))
     })
 
-    it('shows warn and up when loglevel is warn', () => {
+    it('sends http request for warn and up when loglevel is warn', () => {
       const handler = getHandler({logLevel: NgLogLevel.warn})
 
       handler.debug('debug message')
@@ -189,7 +223,7 @@ describe('HttpLogHandler', () => {
       expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"error"`))
     })
 
-    it('shows only error messages when loglevel is error', () => {
+    it('sends http request for only error messages when loglevel is error', () => {
       const handler = getHandler({logLevel: NgLogLevel.error})
 
       handler.debug('debug message')
@@ -202,6 +236,7 @@ describe('HttpLogHandler', () => {
       expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"error"`))
     })
   })
+
   for (const level in NgLogLevel) {
     const logLevel: string = NgLogLevel[level]
     if (typeof logLevel === 'string') {

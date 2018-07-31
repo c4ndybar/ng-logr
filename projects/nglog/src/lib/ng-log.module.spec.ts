@@ -2,7 +2,7 @@ import {TestBed} from '@angular/core/testing'
 import {NgLogModule} from './ng-log.module'
 import {defaultNgLogOptions, INgLogOptions, NgLogOptions} from './ng-log-options'
 import {NgLogLevel} from './ng-log-level'
-import {NgLogErrorHandler} from './ng-log-error-handler.service'
+import {NgLogErrorHandler} from './services/ng-log-error-handler.service'
 import {ErrorHandler} from '@angular/core'
 
 describe('ng-log.module', () => {

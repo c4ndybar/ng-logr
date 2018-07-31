@@ -1,4 +1,4 @@
-import {INgLog} from '../ng-log.service'
+import {INgLog} from '../services/ng-log.service'
 import {NgLogLevel} from '../ng-log-level'
 
 export interface INgLogHandlerOptions {

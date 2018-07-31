@@ -1,6 +1,6 @@
 import {Inject, Injectable} from '@angular/core'
-import {defaultNgLogOptions, INgLogOptions, NgLogOptions} from './ng-log-options'
-import {defaultNgLogHandlerOptions, INgLogHandler} from './log-handlers/ng-log-handler'
+import {defaultNgLogOptions, INgLogOptions, NgLogOptions} from '../ng-log-options'
+import {defaultNgLogHandlerOptions, INgLogHandler} from '../log-handlers/ng-log-handler'
 
 export interface INgLog {
   debug(message?: any, ...params: any[]): void

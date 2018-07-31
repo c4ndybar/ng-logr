@@ -1,5 +1,5 @@
 import {ErrorHandler, NgModule} from '@angular/core'
-import {NgLogErrorHandler} from './ng-log-error-handler.service'
+import {NgLogErrorHandler} from './services/ng-log-error-handler.service'
 import {NgLogOptions} from './ng-log-options'
 import {defaultNgLogOptions} from './ng-log-options'
 
