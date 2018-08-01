@@ -68,7 +68,7 @@ export class HttpLogHandler implements INgLogHandler {
       params
     }
 
-    return (stringify as any)(data, this.replacer)
+    return stringify(data, this.replacer)
   }
 
   private replacer(_key, value) {
@@ -83,8 +83,9 @@ export class HttpLogHandler implements INgLogHandler {
           error[key] = value[key]
         }
       })
-
       value = error
+    } else if (value.constructor.name === 'DebugContext_') {
+      value = '[DebugContext_]'
     }
 
     return value

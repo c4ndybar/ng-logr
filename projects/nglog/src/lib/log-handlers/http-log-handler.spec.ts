@@ -289,6 +289,21 @@ describe('HttpLogHandler', () => {
           expect(xhrSendPayload).toEqual({logLevel: logLevel, params: [{message: error.message, stack: error.stack}]})
         })
 
+        it('does not post DebugContext_ objects', () => {
+          const handler = getHandler()
+
+          class DebugContext_ {
+          }
+
+          const context = new DebugContext_()
+
+          handler[logLevel]('ERROR CONTEXT', context)
+
+          const args = (<any>xhrSpy).send.calls.argsFor(0)
+          const xhrSendPayload = JSON.parse(args[0])
+          expect(xhrSendPayload).toEqual({logLevel: logLevel, params: ["ERROR CONTEXT", "[DebugContext_]"]})
+        })
+
         it(`does not change the error property configurable descriptor`, () => {
           // this test is in here due to a previous implementation that would alter the Error object to get it to serialize properly.
           // However, the error object should not be altered for serialization purposes.
