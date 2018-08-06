@@ -1,21 +1,10 @@
 import {Inject, Injectable} from '@angular/core'
 import {defaultNgLogOptions, INgLogOptions, NgLogOptions} from '../ng-log-options'
 import {defaultNgLogHandlerOptions, INgLogHandler} from '../log-handlers/ng-log-handler'
-
-export interface INgLog {
-  debug(message?: any, ...params: any[]): void
-
-  info(message?: any, ...params: any[]): void
-
-  log(message?: any, ...params: any[]): void
-
-  warn(message?: any, ...params: any[]): void
-
-  error(message?: any, ...params: any[]): void
-}
+import {NgLogLevel} from '../ng-log-level'
 
 @Injectable({providedIn: 'root'})
-export class NgLog implements INgLog {
+export class NgLog {
   private readonly logHandlers: INgLogHandler[]
 
   constructor(@Inject(NgLogOptions) options: INgLogOptions) {
@@ -29,32 +18,28 @@ export class NgLog implements INgLog {
   }
 
   debug(message?: any, ...params: any[]): void {
-    this.logHandlers.forEach((handler) => {
-      handler.debug(message, ...params)
-    })
+    this.handleLog(NgLogLevel.debug, message, ...params)
   }
 
   info(message?: any, ...params: any[]): void {
-    this.logHandlers.forEach((handler) => {
-      handler.info(message, ...params)
-    })
+    this.handleLog(NgLogLevel.info, message, ...params)
   }
 
   log(message?: any, ...params: any[]): void {
-    this.logHandlers.forEach((handler) => {
-      handler.log(message, ...params)
-    })
+    this.handleLog(NgLogLevel.log, message, ...params)
   }
 
   warn(message?: any, ...params: any[]): void {
-    this.logHandlers.forEach((handler) => {
-      handler.warn(message, ...params)
-    })
+    this.handleLog(NgLogLevel.warn, message, ...params)
   }
 
   error(message?: any, ...params: any[]) {
+    this.handleLog(NgLogLevel.error, message, ...params)
+  }
+
+  private handleLog(level: NgLogLevel, ...params) {
     this.logHandlers.forEach((handler) => {
-      handler.error(message, ...params)
+      handler.handleLog(level, ...params)
     })
   }
 }

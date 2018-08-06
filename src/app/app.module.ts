@@ -7,7 +7,7 @@ import {HttpLogHandler} from 'nglog'
 const options: INgLogOptions = {
   logLevel: NgLogLevel.debug,
   logHandlers: [
-    new ConsoleLogHandler(),
+    new ConsoleLogHandler({logLevel}),
     new HttpLogHandler({logLevel: NgLogLevel.error, httpPostRoute: 'http://localhost:4201/logError'})
   ]
 }

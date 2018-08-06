@@ -1,4 +1,3 @@
-import {INgLog} from '../services/ng-log.service'
 import {NgLogLevel} from '../ng-log-level'
 
 export interface INgLogHandlerOptions {
@@ -9,5 +8,6 @@ export const defaultNgLogHandlerOptions: INgLogHandlerOptions = {
   logLevel: NgLogLevel.debug,
 }
 
-export interface INgLogHandler extends INgLog, INgLogHandlerOptions {
+export interface INgLogHandler extends INgLogHandlerOptions {
+  handleLog(logLevel: NgLogLevel, ...logParams: any[])
 }

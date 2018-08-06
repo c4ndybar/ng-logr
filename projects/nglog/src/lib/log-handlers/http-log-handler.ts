@@ -15,27 +15,7 @@ export class HttpLogHandler implements INgLogHandler {
     Object.assign(<any>this, options)
   }
 
-  debug(message?: any, ...params: any[]): void {
-    this.postLog(NgLogLevel.debug, message, ...params)
-  }
-
-  error(message?: any, ...params: any[]): void {
-    this.postLog(NgLogLevel.error, message, ...params)
-  }
-
-  info(message?: any, ...params: any[]): void {
-    this.postLog(NgLogLevel.info, message, ...params)
-  }
-
-  log(message?: any, ...params: any[]): void {
-    this.postLog(NgLogLevel.log, message, ...params)
-  }
-
-  warn(message?: any, ...params: any[]): void {
-    this.postLog(NgLogLevel.warn, message, ...params)
-  }
-
-  private postLog(level: NgLogLevel, ...params: any[]) {
+  handleLog(level: NgLogLevel, ...params: any[]) {
     if (level < this.logLevel) {
       return
     }
@@ -48,8 +28,8 @@ export class HttpLogHandler implements INgLogHandler {
       httpRequest.onreadystatechange = function () {
         if (this.readyState === XMLHttpRequest.DONE) {
           if (this.status !== 200) {
-            console.error('XHR failed', httpRequest)
-            console.error('Log was not posted - ', NgLogLevel[level], params)
+            console.debug('XHR failed', httpRequest)
+            console.debug('Log was not posted - ', NgLogLevel[level], params)
           }
         }
       }
@@ -57,8 +37,8 @@ export class HttpLogHandler implements INgLogHandler {
       const serialized = this.serializeXhrPayload(level, params)
       httpRequest.send(serialized)
     } catch (err) {
-      console.error('Error while trying to post log - ', err)
-      console.error('Log was not posted - ', NgLogLevel[level], params)
+      console.debug('Error while trying to post log - ', err)
+      console.debug('Log was not posted - ', NgLogLevel[level], params)
     }
   }
 
@@ -75,9 +55,8 @@ export class HttpLogHandler implements INgLogHandler {
     if (value instanceof Error) {
       const error = {}
 
-      // we need to remove the angular properties from the error object because that can cause errors.
-      // we also need to make the stack and message properties enumerable
-      // this accomplishes both goals
+      // remove the angular properties from the error object because we do not want to post that data.
+      // we also need to make the stack and message properties are enumerable
       Object.getOwnPropertyNames(value).forEach(function (key) {
         if (!['ngDebugContext', 'ngErrorLogger', 'DebugContext_'].includes(key)) {
           error[key] = value[key]

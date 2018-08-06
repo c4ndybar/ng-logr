@@ -1,5 +1,6 @@
 import {HttpLogHandler} from './http-log-handler'
 import {NgLogLevel} from '../ng-log-level'
+import {INgLogHandler} from './ng-log-handler'
 
 describe('HttpLogHandler', () => {
   let xhrSpy
@@ -8,7 +9,7 @@ describe('HttpLogHandler', () => {
     xhrSpy = jasmine.createSpyObj('xhr', ['send', 'open', 'setRequestHeader', 'onreadystatechange'])
   })
 
-  function getHandler(options = {}): HttpLogHandler {
+  function getHandler(options = {}): INgLogHandler {
     const handler: any = new HttpLogHandler(options)
     handler.XmlHttpRequest = () => xhrSpy
 
@@ -26,37 +27,30 @@ describe('HttpLogHandler', () => {
   })
 
   it('sends an http request', () => {
-    const handler: any = getHandler()
-
-    handler.log('should send')
+    getHandler().handleLog(NgLogLevel.log, 'should send')
 
     expect(xhrSpy.send).toHaveBeenCalled()
   })
 
   it('posts to /log asynchronously by default', () => {
-    const handler: any = getHandler()
-
-    handler.log('should post')
+    getHandler().handleLog(NgLogLevel.log, 'should post')
 
     expect(xhrSpy.open).toHaveBeenCalledWith('POST', '/log', true)
   })
 
   it('sets the request header', () => {
-    const handler: any = getHandler()
-
-    handler.log('log message')
+    getHandler().handleLog(NgLogLevel.log, 'log message')
 
     expect(xhrSpy.setRequestHeader).toHaveBeenCalledWith('Content-Type', 'application/json')
   })
 
   describe('circular references', () => {
     it('serializes circular references appropriately', () => {
-      const handler: any = getHandler()
       const foo: any = {someVal: 5}
       const bar: any = {nestedObj: foo}
       foo.circularRef = bar
 
-      handler.log(bar)
+      getHandler().handleLog(NgLogLevel.log, bar)
 
       const args = (<any>xhrSpy).send.calls.argsFor(0)
       const xhrSendPayload = JSON.parse(args[0])
@@ -67,11 +61,10 @@ describe('HttpLogHandler', () => {
     })
 
     it('handles infinite circular ref', () => {
-      const handler: any = getHandler()
       const foo: any = {}
       foo.anotherFoo = foo
 
-      handler.log(foo)
+      getHandler().handleLog(NgLogLevel.log, foo)
 
       const args = (<any>xhrSpy).send.calls.argsFor(0)
       const xhrSendPayload = JSON.parse(args[0])
@@ -82,10 +75,9 @@ describe('HttpLogHandler', () => {
     })
 
     it('does not incorrectly identify repeated value references as ciruclar references', () => {
-      const handler: any = getHandler()
       const bar: any = {one: 1, anotherOne: 1}
 
-      handler.log(bar)
+      getHandler().handleLog(NgLogLevel.log, bar)
 
       const args = (<any>xhrSpy).send.calls.argsFor(0)
       const xhrSendPayload = JSON.parse(args[0])
@@ -96,11 +88,10 @@ describe('HttpLogHandler', () => {
     })
 
     it('does not incorrectly identify repeated object references as ciruclar references', () => {
-      const handler: any = getHandler()
       const foo = {}
       const bar: any = {foo: foo, anotherFoo: foo}
 
-      handler.log(bar)
+      getHandler().handleLog(NgLogLevel.log, bar)
 
       const args = (<any>xhrSpy).send.calls.argsFor(0)
       const xhrSendPayload = JSON.parse(args[0])
@@ -112,16 +103,16 @@ describe('HttpLogHandler', () => {
   })
 
   describe('handling response', () => {
-    let errorSpy
+    let debugSpy
 
     beforeEach(() => {
-      errorSpy = spyOn(console, 'error')
+      debugSpy = spyOn(console, 'debug')
 
     })
 
     it('ignores ready states except for done', () => {
-      const handler: any = getHandler()
-      handler.log('log message')
+      getHandler().handleLog(NgLogLevel.log, 'log message')
+
       xhrSpy.status = 404
 
       xhrSpy.readyState = XMLHttpRequest.HEADERS_RECEIVED
@@ -136,33 +127,30 @@ describe('HttpLogHandler', () => {
       xhrSpy.readyState = XMLHttpRequest.LOADING
       xhrSpy.onreadystatechange({} as Event)
 
-      expect(errorSpy).not.toHaveBeenCalled()
+      expect(debugSpy).not.toHaveBeenCalled()
     })
 
     it('logs error if status is not 200 and request is done', () => {
-      const handler: any = getHandler()
-
-      handler.log('log message', {x: 'yz'})
+      getHandler().handleLog(NgLogLevel.log, 'log message', {x: 'yz'})
 
       xhrSpy.status = 404
       xhrSpy.readyState = XMLHttpRequest.DONE
       xhrSpy.onreadystatechange({} as Event)
 
-      expect(errorSpy).toHaveBeenCalledWith('XHR failed', xhrSpy)
-      expect(errorSpy).toHaveBeenCalledWith('Log was not posted - ', 'log', ['log message', {x: 'yz'}])
+      expect(debugSpy).toHaveBeenCalledWith('XHR failed', xhrSpy)
+      expect(debugSpy).toHaveBeenCalledWith('Log was not posted - ', 'log', ['log message', {x: 'yz'}])
     })
 
-    it('logs an error if something fails', () => {
-      const handler: any = getHandler()
+    it('logs an debug message if something fails', () => {
       const error = new Error('send failed')
       xhrSpy.send.and.callFake(() => {
         throw error
       })
 
-      handler.log('log message', {x: 'yz'})
+      getHandler().handleLog(NgLogLevel.log, 'log message', {x: 'yz'})
 
-      expect(errorSpy).toHaveBeenCalledWith('Error while trying to post log - ', error)
-      expect(errorSpy).toHaveBeenCalledWith('Log was not posted - ', 'log', ['log message', {x: 'yz'}])
+      expect(debugSpy).toHaveBeenCalledWith('Error while trying to post log - ', error)
+      expect(debugSpy).toHaveBeenCalledWith('Log was not posted - ', 'log', ['log message', {x: 'yz'}])
     })
   })
 
@@ -171,7 +159,7 @@ describe('HttpLogHandler', () => {
       const route = '/my/route/for/logging'
       const handler = getHandler({httpPostRoute: route})
 
-      handler.log('log message')
+      handler.handleLog(NgLogLevel.log, 'log message')
 
       expect(xhrSpy.open).toHaveBeenCalledWith(jasmine.anything(), route, jasmine.anything())
     })
@@ -179,11 +167,11 @@ describe('HttpLogHandler', () => {
     it('debug sends http request for all log levels', () => {
       const handler = getHandler({logLevel: NgLogLevel.debug})
 
-      handler.debug('debug message')
-      handler.info('info message')
-      handler.log('log message')
-      handler.warn('warn message')
-      handler.error('error message')
+      handler.handleLog(NgLogLevel.debug, 'debug message')
+      handler.handleLog(NgLogLevel.info, 'info message')
+      handler.handleLog(NgLogLevel.log, 'log message')
+      handler.handleLog(NgLogLevel.warn, 'warn message')
+      handler.handleLog(NgLogLevel.error, 'error message')
 
       expect(xhrSpy.send).toHaveBeenCalledTimes(5)
       expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"debug"`))
@@ -196,11 +184,11 @@ describe('HttpLogHandler', () => {
     it('sends http request for info and up when loglevel is info', () => {
       const handler = getHandler({logLevel: NgLogLevel.info})
 
-      handler.debug('debug message')
-      handler.info('info message')
-      handler.log('log message')
-      handler.warn('warn message')
-      handler.error('error message')
+      handler.handleLog(NgLogLevel.debug, 'debug message')
+      handler.handleLog(NgLogLevel.info, 'info message')
+      handler.handleLog(NgLogLevel.log, 'log message')
+      handler.handleLog(NgLogLevel.warn, 'warn message')
+      handler.handleLog(NgLogLevel.error, 'error message')
 
       expect(xhrSpy.send).toHaveBeenCalledTimes(4)
       expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"info"`))
@@ -212,11 +200,11 @@ describe('HttpLogHandler', () => {
     it('sends http request for log and up when loglevel is log', () => {
       const handler = getHandler({logLevel: NgLogLevel.log})
 
-      handler.debug('debug message')
-      handler.info('info message')
-      handler.log('log message')
-      handler.warn('warn message')
-      handler.error('error message')
+      handler.handleLog(NgLogLevel.debug, 'debug message')
+      handler.handleLog(NgLogLevel.info, 'info message')
+      handler.handleLog(NgLogLevel.log, 'log message')
+      handler.handleLog(NgLogLevel.warn, 'warn message')
+      handler.handleLog(NgLogLevel.error, 'error message')
 
       expect(xhrSpy.send).toHaveBeenCalledTimes(3)
       expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"log"`))
@@ -227,11 +215,11 @@ describe('HttpLogHandler', () => {
     it('sends http request for warn and up when loglevel is warn', () => {
       const handler = getHandler({logLevel: NgLogLevel.warn})
 
-      handler.debug('debug message')
-      handler.info('info message')
-      handler.log('log message')
-      handler.warn('warn message')
-      handler.error('error message')
+      handler.handleLog(NgLogLevel.debug, 'debug message')
+      handler.handleLog(NgLogLevel.info, 'info message')
+      handler.handleLog(NgLogLevel.log, 'log message')
+      handler.handleLog(NgLogLevel.warn, 'warn message')
+      handler.handleLog(NgLogLevel.error, 'error message')
 
       expect(xhrSpy.send).toHaveBeenCalledTimes(2)
       expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"warn"`))
@@ -241,86 +229,79 @@ describe('HttpLogHandler', () => {
     it('sends http request for only error messages when loglevel is error', () => {
       const handler = getHandler({logLevel: NgLogLevel.error})
 
-      handler.debug('debug message')
-      handler.info('info message')
-      handler.log('log message')
-      handler.warn('warn message')
-      handler.error('error message')
+      handler.handleLog(NgLogLevel.debug, 'debug message')
+      handler.handleLog(NgLogLevel.info, 'info message')
+      handler.handleLog(NgLogLevel.log, 'log message')
+      handler.handleLog(NgLogLevel.warn, 'warn message')
+      handler.handleLog(NgLogLevel.error, 'error message')
 
       expect(xhrSpy.send).toHaveBeenCalledTimes(1)
       expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"error"`))
     })
   })
 
-  for (const level in NgLogLevel) {
-    const logLevel: string = NgLogLevel[level]
-    if (typeof logLevel === 'string') {
-      describe(`.${logLevel}`, () => {
-        it(`formats the data correctly`, () => {
-          const handler = getHandler()
+  it(`formats the data correctly`, () => {
+    const handler = getHandler()
 
-          handler[logLevel](`${logLevel} log`)
-          expect(xhrSpy.send).toHaveBeenCalledWith(`{"logLevel":"${logLevel}","params":["${logLevel} log"]}`)
-          expect(xhrSpy.send).toHaveBeenCalledTimes(1)
-        })
+    handler.handleLog(NgLogLevel.log, 'log')
 
-        it(`formats the errors correctly`, () => {
-          const handler = getHandler()
-          const error = new Error(`${logLevel} error`)
+    expect(xhrSpy.send).toHaveBeenCalledWith(`{"logLevel":"log","params":["log"]}`)
+    expect(xhrSpy.send).toHaveBeenCalledTimes(1)
+  })
 
-          handler[logLevel](error)
+  it(`formats the errors correctly`, () => {
+    const handler = getHandler()
+    const error = new Error(`log error`)
 
-          const args = (<any>xhrSpy).send.calls.argsFor(0)
-          const xhrSendPayload = JSON.parse(args[0])
-          expect(xhrSendPayload).toEqual({logLevel: logLevel, params: [{message: error.message, stack: error.stack}]})
-        })
+    handler.handleLog(NgLogLevel.log, error)
 
-        it('removes angular error properties from serialization', () => {
-          const handler = getHandler()
-          const error: any = new Error(`${logLevel} error`)
-          error.ngDebugContext = 'context'
-          error.ngErrorLogger = 'logger'
-          error.DebugContext_ = 'other context'
+    const args = (<any>xhrSpy).send.calls.argsFor(0)
+    const xhrSendPayload = JSON.parse(args[0])
+    expect(xhrSendPayload).toEqual({logLevel: 'log', params: [{message: error.message, stack: error.stack}]})
+  })
 
-          handler[logLevel](error)
+  it('removes angular error properties from serialization', () => {
+    const handler = getHandler()
+    const error: any = new Error(`log error`)
+    error.ngDebugContext = 'context'
+    error.ngErrorLogger = 'logger'
+    error.DebugContext_ = 'other context'
 
-          const args = (<any>xhrSpy).send.calls.argsFor(0)
-          const xhrSendPayload = JSON.parse(args[0])
-          expect(xhrSendPayload).toEqual({logLevel: logLevel, params: [{message: error.message, stack: error.stack}]})
-        })
+    handler.handleLog(NgLogLevel.log, error)
 
-        it('does not post DebugContext_ objects', () => {
-          const handler = getHandler()
+    const args = (<any>xhrSpy).send.calls.argsFor(0)
+    const xhrSendPayload = JSON.parse(args[0])
+    expect(xhrSendPayload).toEqual({logLevel: 'log', params: [{message: error.message, stack: error.stack}]})
+  })
 
-          class DebugContext_ {
-          }
+  it('does not post DebugContext_ objects', () => {
+    const handler = getHandler()
 
-          const context = new DebugContext_()
-
-          handler[logLevel]('ERROR CONTEXT', context)
-
-          const args = (<any>xhrSpy).send.calls.argsFor(0)
-          const xhrSendPayload = JSON.parse(args[0])
-          expect(xhrSendPayload).toEqual({logLevel: logLevel, params: ["ERROR CONTEXT", "[DebugContext_]"]})
-        })
-
-        it(`does not change the error property configurable descriptor`, () => {
-          // this test is in here due to a previous implementation that would alter the Error object to get it to serialize properly.
-          // However, the error object should not be altered for serialization purposes.
-
-          const handler = getHandler()
-          const error = new Error(`${logLevel} error`)
-
-          handler[logLevel](error)
-
-          const messageDescriptor = Object.getOwnPropertyDescriptor(error, 'message')
-          const stackDescriptor = Object.getOwnPropertyDescriptor(error, 'stack')
-          expect(messageDescriptor.enumerable).toBeFalsy()
-          expect(stackDescriptor.enumerable).toBeFalsy()
-        })
-
-      })
-
+    class DebugContext_ {
     }
-  }
+
+    const context = new DebugContext_()
+
+    handler.handleLog(NgLogLevel.log, 'ERROR CONTEXT', context)
+
+    const args = (<any>xhrSpy).send.calls.argsFor(0)
+    const xhrSendPayload = JSON.parse(args[0])
+    expect(xhrSendPayload).toEqual({logLevel: 'log', params: ['ERROR CONTEXT', '[DebugContext_]']})
+  })
+
+  it(`does not change the error property configurable descriptor`, () => {
+    // this test is in here due to a previous implementation that would alter the Error object to get it to serialize properly.
+    // However, the error object should not be altered for serialization purposes.
+
+    const handler = getHandler()
+    const error = new Error(`log error`)
+
+    handler.handleLog(NgLogLevel.log, [error])
+
+    const messageDescriptor = Object.getOwnPropertyDescriptor(error, 'message')
+    const stackDescriptor = Object.getOwnPropertyDescriptor(error, 'stack')
+    expect(messageDescriptor.enumerable).toBeFalsy()
+    expect(stackDescriptor.enumerable).toBeFalsy()
+  })
+
 })

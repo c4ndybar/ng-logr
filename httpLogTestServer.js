@@ -13,7 +13,7 @@ app.use('*', (req, res, next) => {
   next()
 })
 
-app.post('/logError', (req, res) => {
+app.post('/log', (req, res) => {
   console.log(req.body)
   res.json()
 })

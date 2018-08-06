@@ -1,39 +1,18 @@
-import {INgLogHandler} from './ng-log-handler'
+import {INgLogHandler, INgLogHandlerOptions} from './ng-log-handler'
 import {NgLogLevel} from '../ng-log-level'
-import {INgLogOptions} from '../ng-log-options'
 
 export class ConsoleLogHandler implements INgLogHandler {
   logLevel?: NgLogLevel
 
-  constructor(options: INgLogOptions = {}) {
+  constructor(options: INgLogHandlerOptions = {}) {
     Object.assign(<ConsoleLogHandler>this, options)
   }
 
-  debug(message?: any, ...params: any[]): void {
-    if (this.logLevel === NgLogLevel.debug) {
-      console.debug(message, ...params)
-    }
-  }
+  handleLog(logLevel: NgLogLevel, ...logParams: any[]) {
+    if (this.logLevel <= logLevel) {
+      const logLevelName = NgLogLevel[logLevel]
 
-  info(message?: any, ...params: any[]): void {
-    if (this.logLevel <= NgLogLevel.info) {
-      console.info(message, ...params)
+      console[logLevelName](...logParams)
     }
-  }
-
-  log(message?: any, ...params: any[]): void {
-    if (this.logLevel <= NgLogLevel.log) {
-      console.log(message, ...params)
-    }
-  }
-
-  warn(message?: any, ...params: any[]): void {
-    if (this.logLevel <= NgLogLevel.warn) {
-      console.warn(message, ...params)
-    }
-  }
-
-  error(message?: any, ...params: any[]) {
-    console.error(message, ...params)
   }
 }
