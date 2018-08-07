@@ -8,6 +8,12 @@ export const defaultNgLogHandlerOptions: INgLogHandlerOptions = {
   logLevel: NgLogLevel.debug,
 }
 
-export interface INgLogHandler extends INgLogHandlerOptions {
-  handleLog(logLevel: NgLogLevel, ...logParams: any[])
+export abstract class NgLogHandler {
+  logLevel?: NgLogLevel
+
+  constructor(options: INgLogHandlerOptions = {}) {
+    Object.assign(<any>this, options)
+  }
+
+  abstract handleLog(logLevel: NgLogLevel, ...logParams: any[])
 }

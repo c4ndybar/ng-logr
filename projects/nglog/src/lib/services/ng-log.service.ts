@@ -1,11 +1,11 @@
 import {Inject, Injectable} from '@angular/core'
 import {defaultNgLogOptions, INgLogOptions, NgLogOptions} from '../ng-log-options'
-import {defaultNgLogHandlerOptions, INgLogHandler} from '../log-handlers/ng-log-handler'
+import {defaultNgLogHandlerOptions, NgLogHandler} from '../log-handlers/ng-log-handler'
 import {NgLogLevel} from '../ng-log-level'
 
 @Injectable({providedIn: 'root'})
 export class NgLog {
-  private readonly logHandlers: INgLogHandler[]
+  private readonly logHandlers: NgLogHandler[]
 
   constructor(@Inject(NgLogOptions) options: INgLogOptions) {
     options = Object.assign({}, defaultNgLogOptions, options)
@@ -39,7 +39,9 @@ export class NgLog {
 
   private handleLog(level: NgLogLevel, ...params) {
     this.logHandlers.forEach((handler) => {
-      handler.handleLog(level, ...params)
+      if (handler.logLevel <= level) {
+        handler.handleLog(level, ...params)
+      }
     })
   }
 }

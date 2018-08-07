@@ -1,25 +1,22 @@
-import {INgLogHandler, INgLogHandlerOptions} from './ng-log-handler'
+import {INgLogHandlerOptions} from './ng-log-handler'
 import {NgLogLevel} from '../ng-log-level'
 import stringify from 'fast-safe-stringify'
+import {NgLogHandler} from './ng-log-handler'
 
 export interface IHttpLogHandlerOptions extends INgLogHandlerOptions {
   httpPostRoute?: string
 }
 
-export class HttpLogHandler implements INgLogHandler {
-  logLevel?: NgLogLevel
-  private httpPostRoute = '/log'
+export class HttpLogHandler extends NgLogHandler {
+  private httpPostRoute: string
   private XmlHttpRequest = XMLHttpRequest
 
   constructor(options: IHttpLogHandlerOptions = {}) {
-    Object.assign(<any>this, options)
+    super(options)
+    this.httpPostRoute = this.httpPostRoute || '/log'
   }
 
   handleLog(level: NgLogLevel, ...params: any[]) {
-    if (level < this.logLevel) {
-      return
-    }
-
     try {
       const httpRequest = new this.XmlHttpRequest()
       httpRequest.open('POST', this.httpPostRoute, true)

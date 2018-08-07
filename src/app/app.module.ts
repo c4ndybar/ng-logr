@@ -1,14 +1,33 @@
 import {BrowserModule} from '@angular/platform-browser'
 import {NgModule} from '@angular/core'
 import {AppComponent} from './app.component'
-import {ConsoleLogHandler, INgLogOptions, NgLogLevel, NgLogModule, NgLogOptions} from 'nglog'
-import {HttpLogHandler} from 'nglog'
+import {ConsoleLogHandler, INgLogOptions, NgLogHandler, NgLogLevel, NgLogModule, NgLogOptions} from 'nglog'
+import iziToast from 'izitoast'
+
+// declare var iziToast: any
+
+class TimestampConsoleLogHandler extends ConsoleLogHandler {
+
+  handleLog(level: NgLogLevel, ...params: any[]) {
+    super.handleLog(level, (new Date()).toLocaleString(), ...params)
+  }
+}
+
+class ToastLogHandler extends NgLogHandler {
+
+  handleLog(level: NgLogLevel, ...params: any[]) {
+    iziToast.show({
+      title: NgLogLevel[level] + ' message',
+      message: JSON.stringify(params)
+    })
+  }
+}
 
 const options: INgLogOptions = {
   logLevel: NgLogLevel.debug,
   logHandlers: [
-    new ConsoleLogHandler({logLevel}),
-    new HttpLogHandler({logLevel: NgLogLevel.error, httpPostRoute: 'http://localhost:4201/logError'})
+    new TimestampConsoleLogHandler(),
+    new ToastLogHandler()
   ]
 }
 

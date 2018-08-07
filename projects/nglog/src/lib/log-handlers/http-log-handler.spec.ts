@@ -1,6 +1,6 @@
 import {HttpLogHandler} from './http-log-handler'
 import {NgLogLevel} from '../ng-log-level'
-import {INgLogHandler} from './ng-log-handler'
+import {NgLogHandler} from './ng-log-handler'
 
 describe('HttpLogHandler', () => {
   let xhrSpy
@@ -9,7 +9,7 @@ describe('HttpLogHandler', () => {
     xhrSpy = jasmine.createSpyObj('xhr', ['send', 'open', 'setRequestHeader', 'onreadystatechange'])
   })
 
-  function getHandler(options = {}): INgLogHandler {
+  function getHandler(options = {}): NgLogHandler {
     const handler: any = new HttpLogHandler(options)
     handler.XmlHttpRequest = () => xhrSpy
 
@@ -162,81 +162,6 @@ describe('HttpLogHandler', () => {
       handler.handleLog(NgLogLevel.log, 'log message')
 
       expect(xhrSpy.open).toHaveBeenCalledWith(jasmine.anything(), route, jasmine.anything())
-    })
-
-    it('debug sends http request for all log levels', () => {
-      const handler = getHandler({logLevel: NgLogLevel.debug})
-
-      handler.handleLog(NgLogLevel.debug, 'debug message')
-      handler.handleLog(NgLogLevel.info, 'info message')
-      handler.handleLog(NgLogLevel.log, 'log message')
-      handler.handleLog(NgLogLevel.warn, 'warn message')
-      handler.handleLog(NgLogLevel.error, 'error message')
-
-      expect(xhrSpy.send).toHaveBeenCalledTimes(5)
-      expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"debug"`))
-      expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"info"`))
-      expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"log"`))
-      expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"warn"`))
-      expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"error"`))
-    })
-
-    it('sends http request for info and up when loglevel is info', () => {
-      const handler = getHandler({logLevel: NgLogLevel.info})
-
-      handler.handleLog(NgLogLevel.debug, 'debug message')
-      handler.handleLog(NgLogLevel.info, 'info message')
-      handler.handleLog(NgLogLevel.log, 'log message')
-      handler.handleLog(NgLogLevel.warn, 'warn message')
-      handler.handleLog(NgLogLevel.error, 'error message')
-
-      expect(xhrSpy.send).toHaveBeenCalledTimes(4)
-      expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"info"`))
-      expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"log"`))
-      expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"warn"`))
-      expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"error"`))
-    })
-
-    it('sends http request for log and up when loglevel is log', () => {
-      const handler = getHandler({logLevel: NgLogLevel.log})
-
-      handler.handleLog(NgLogLevel.debug, 'debug message')
-      handler.handleLog(NgLogLevel.info, 'info message')
-      handler.handleLog(NgLogLevel.log, 'log message')
-      handler.handleLog(NgLogLevel.warn, 'warn message')
-      handler.handleLog(NgLogLevel.error, 'error message')
-
-      expect(xhrSpy.send).toHaveBeenCalledTimes(3)
-      expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"log"`))
-      expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"warn"`))
-      expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"error"`))
-    })
-
-    it('sends http request for warn and up when loglevel is warn', () => {
-      const handler = getHandler({logLevel: NgLogLevel.warn})
-
-      handler.handleLog(NgLogLevel.debug, 'debug message')
-      handler.handleLog(NgLogLevel.info, 'info message')
-      handler.handleLog(NgLogLevel.log, 'log message')
-      handler.handleLog(NgLogLevel.warn, 'warn message')
-      handler.handleLog(NgLogLevel.error, 'error message')
-
-      expect(xhrSpy.send).toHaveBeenCalledTimes(2)
-      expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"warn"`))
-      expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"error"`))
-    })
-
-    it('sends http request for only error messages when loglevel is error', () => {
-      const handler = getHandler({logLevel: NgLogLevel.error})
-
-      handler.handleLog(NgLogLevel.debug, 'debug message')
-      handler.handleLog(NgLogLevel.info, 'info message')
-      handler.handleLog(NgLogLevel.log, 'log message')
-      handler.handleLog(NgLogLevel.warn, 'warn message')
-      handler.handleLog(NgLogLevel.error, 'error message')
-
-      expect(xhrSpy.send).toHaveBeenCalledTimes(1)
-      expect(xhrSpy.send).toHaveBeenCalledWith(jasmine.stringMatching(`{"logLevel":"error"`))
     })
   })
 

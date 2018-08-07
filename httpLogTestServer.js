@@ -13,7 +13,7 @@ app.use('*', (req, res, next) => {
   next()
 })
 
-app.post('/log', (req, res) => {
+app.post('/nglog-message', (req, res) => {
   console.log(req.body)
   res.json()
 })

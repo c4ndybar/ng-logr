@@ -1,10 +1,10 @@
 import {ConsoleLogHandler} from './console-log-handler'
 import {NgLogLevel} from '../ng-log-level'
-import {INgLogHandler} from './ng-log-handler'
+import {NgLogHandler} from './ng-log-handler'
 import {defaultNgLogOptions, INgLogOptions} from '../ng-log-options'
 
 describe('ConsoleLogHandler', () => {
-  let handler: INgLogHandler
+  let handler: NgLogHandler
   let logSpy, warnSpy, infoSpy, debugSpy, errorSpy
 
   beforeEach(() => {
@@ -15,7 +15,7 @@ describe('ConsoleLogHandler', () => {
     errorSpy = spyOn(console, 'error')
   })
 
-  function getHandler(options: INgLogOptions): INgLogHandler {
+  function getHandler(options: INgLogOptions): NgLogHandler {
     return new ConsoleLogHandler(options)
   }
 
@@ -74,87 +74,5 @@ describe('ConsoleLogHandler', () => {
       expect(logSpy).toHaveBeenCalledWith('log message', 'and more log')
     })
 
-  })
-
-  describe('with options', () => {
-    it('debug allows everything', () => {
-      handler = getHandler({logLevel: NgLogLevel.debug})
-
-      handler.handleLog(NgLogLevel.debug, 'debug message')
-      handler.handleLog(NgLogLevel.info, 'info message')
-      handler.handleLog(NgLogLevel.log, 'log message')
-      handler.handleLog(NgLogLevel.warn, 'warn message')
-      handler.handleLog(NgLogLevel.error, 'error message')
-
-      expect(debugSpy).toHaveBeenCalledWith('debug message')
-      expect(infoSpy).toHaveBeenCalledWith('info message')
-      expect(logSpy).toHaveBeenCalledWith('log message')
-      expect(warnSpy).toHaveBeenCalledWith('warn message')
-      expect(errorSpy).toHaveBeenCalledWith('error message')
-    })
-
-    it('shows info and up when loglevel is info', () => {
-      handler = getHandler({logLevel: NgLogLevel.info})
-
-      handler.handleLog(NgLogLevel.debug, 'debug message')
-      handler.handleLog(NgLogLevel.info, 'info message')
-      handler.handleLog(NgLogLevel.log, 'log message')
-      handler.handleLog(NgLogLevel.warn, 'warn message')
-      handler.handleLog(NgLogLevel.error, 'error message')
-
-      expect(debugSpy).not.toHaveBeenCalled()
-      expect(infoSpy).toHaveBeenCalledWith('info message')
-      expect(logSpy).toHaveBeenCalledWith('log message')
-      expect(warnSpy).toHaveBeenCalledWith('warn message')
-      expect(errorSpy).toHaveBeenCalledWith('error message')
-    })
-
-    it('shows log and up when loglevel is log', () => {
-      handler = getHandler({logLevel: NgLogLevel.log})
-
-      handler.handleLog(NgLogLevel.debug, 'debug message')
-      handler.handleLog(NgLogLevel.info, 'info message')
-      handler.handleLog(NgLogLevel.log, 'log message')
-      handler.handleLog(NgLogLevel.warn, 'warn message')
-      handler.handleLog(NgLogLevel.error, 'error message')
-
-      expect(debugSpy).not.toHaveBeenCalled()
-      expect(infoSpy).not.toHaveBeenCalled()
-      expect(logSpy).toHaveBeenCalledWith('log message')
-      expect(warnSpy).toHaveBeenCalledWith('warn message')
-      expect(errorSpy).toHaveBeenCalledWith('error message')
-    })
-
-    it('shows warn and up when loglevel is warn', () => {
-      handler = getHandler({logLevel: NgLogLevel.warn})
-
-      handler.handleLog(NgLogLevel.debug, 'debug message')
-      handler.handleLog(NgLogLevel.info, 'info message')
-      handler.handleLog(NgLogLevel.log, 'log message')
-      handler.handleLog(NgLogLevel.warn, 'warn message')
-      handler.handleLog(NgLogLevel.error, 'error message')
-
-      expect(debugSpy).not.toHaveBeenCalled()
-      expect(infoSpy).not.toHaveBeenCalled()
-      expect(logSpy).not.toHaveBeenCalled()
-      expect(warnSpy).toHaveBeenCalledWith('warn message')
-      expect(errorSpy).toHaveBeenCalledWith('error message')
-    })
-
-    it('shows only error messages when loglevel is error', () => {
-      handler = getHandler({logLevel: NgLogLevel.error})
-
-      handler.handleLog(NgLogLevel.debug, 'debug message')
-      handler.handleLog(NgLogLevel.info, 'info message')
-      handler.handleLog(NgLogLevel.log, 'log message')
-      handler.handleLog(NgLogLevel.warn, 'warn message')
-      handler.handleLog(NgLogLevel.error, 'error message')
-
-      expect(debugSpy).not.toHaveBeenCalled()
-      expect(infoSpy).not.toHaveBeenCalled()
-      expect(logSpy).not.toHaveBeenCalled()
-      expect(warnSpy).not.toHaveBeenCalled()
-      expect(errorSpy).toHaveBeenCalledWith('error message')
-    })
   })
 })

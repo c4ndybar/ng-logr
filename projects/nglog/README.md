@@ -93,7 +93,7 @@ export class AppModule {
 
 ## Use Cases
 
-#### How can I send logs to the server?
+#### Send logs to the server
 
 Include the `HttpLogHandler` when defining your log handlers in your configuration options.  This log handler posts logs to your sever at the endpoint `/log`.  You can override the log post route by defining the option `postHttpRoute` as shown in the example below.
 ```typescript
@@ -106,7 +106,7 @@ const options: INgLogOptions = {
   logHandlers: [new ConsoleLogHandler(), httpHandler]
 }
 ```
-#### How can I restrict the log level
+#### Restricing the log level
 
 The default log level for NgLog is `debug`.  You can override this globally by providing the option `logLevel` in the `NgLogOptions`.  You can also provide the `logLevel` option to a handler to override the log level for that particular handler.
 ```typescript
@@ -118,5 +118,23 @@ const httpHandler = new HttpLogHandler({
 const options: INgLogOptions = {
   logLevel: NgLogLevel.debug,
   logHandlers: [new ConsoleLogHandler(), httpHandler]
+}
+```
+
+#### Creating a log handler
+
+Just create a class that extends `NgLogHandler` and include it as a `logHandler` in your configuration.
+
+```typescript
+class AwesomeHandler extends NgLogHandler {
+  handleLog(logLevel: NgLogLevel, ...logParams: any[]) {
+    const logLevelName = NgLogLevel[logLevel]
+
+    console[logLevelName]('AWESOME', ...logParams)
+  }
+}
+
+const options: INgLogOptions = {
+  logHandlers: [new AwesomeHandler()]
 }
 ```
