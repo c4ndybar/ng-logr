@@ -44,61 +44,14 @@ describe('HttpLogHandler', () => {
     expect(xhrSpy.setRequestHeader).toHaveBeenCalledWith('Content-Type', 'application/json')
   })
 
-  describe('circular references', () => {
-    it('serializes circular references appropriately', () => {
-      const foo: any = {someVal: 5}
-      const bar: any = {nestedObj: foo}
-      foo.circularRef = bar
+  describe('serialization', () => {
+    it(`formats the data correctly`, () => {
+      const handler = getHandler()
 
-      getHandler().handleLog(NgLogLevel.log, bar)
+      handler.handleLog(NgLogLevel.log, 'log')
 
-      const args = (<any>xhrSpy).send.calls.argsFor(0)
-      const xhrSendPayload = JSON.parse(args[0])
-      expect(xhrSendPayload).toEqual({
-        logLevel: 'log',
-        params: [{nestedObj: {someVal: 5, circularRef: '[Circular]'}}]
-      })
-    })
-
-    it('handles infinite circular ref', () => {
-      const foo: any = {}
-      foo.anotherFoo = foo
-
-      getHandler().handleLog(NgLogLevel.log, foo)
-
-      const args = (<any>xhrSpy).send.calls.argsFor(0)
-      const xhrSendPayload = JSON.parse(args[0])
-      expect(xhrSendPayload).toEqual({
-        logLevel: 'log',
-        params: [{anotherFoo: '[Circular]'}]
-      })
-    })
-
-    it('does not incorrectly identify repeated value references as ciruclar references', () => {
-      const bar: any = {one: 1, anotherOne: 1}
-
-      getHandler().handleLog(NgLogLevel.log, bar)
-
-      const args = (<any>xhrSpy).send.calls.argsFor(0)
-      const xhrSendPayload = JSON.parse(args[0])
-      expect(xhrSendPayload).toEqual({
-        logLevel: 'log',
-        params: [bar],
-      })
-    })
-
-    it('does not incorrectly identify repeated object references as ciruclar references', () => {
-      const foo = {}
-      const bar: any = {foo: foo, anotherFoo: foo}
-
-      getHandler().handleLog(NgLogLevel.log, bar)
-
-      const args = (<any>xhrSpy).send.calls.argsFor(0)
-      const xhrSendPayload = JSON.parse(args[0])
-      expect(xhrSendPayload).toEqual({
-        logLevel: 'log',
-        params: [bar],
-      })
+      expect(xhrSpy.send).toHaveBeenCalledWith(`{"logLevel":"log","params":["log"]}`)
+      expect(xhrSpy.send).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -163,70 +116,6 @@ describe('HttpLogHandler', () => {
 
       expect(xhrSpy.open).toHaveBeenCalledWith(jasmine.anything(), route, jasmine.anything())
     })
-  })
-
-  it(`formats the data correctly`, () => {
-    const handler = getHandler()
-
-    handler.handleLog(NgLogLevel.log, 'log')
-
-    expect(xhrSpy.send).toHaveBeenCalledWith(`{"logLevel":"log","params":["log"]}`)
-    expect(xhrSpy.send).toHaveBeenCalledTimes(1)
-  })
-
-  it(`formats the errors correctly`, () => {
-    const handler = getHandler()
-    const error = new Error(`log error`)
-
-    handler.handleLog(NgLogLevel.log, error)
-
-    const args = (<any>xhrSpy).send.calls.argsFor(0)
-    const xhrSendPayload = JSON.parse(args[0])
-    expect(xhrSendPayload).toEqual({logLevel: 'log', params: [{message: error.message, stack: error.stack}]})
-  })
-
-  it('removes angular error properties from serialization', () => {
-    const handler = getHandler()
-    const error: any = new Error(`log error`)
-    error.ngDebugContext = 'context'
-    error.ngErrorLogger = 'logger'
-    error.DebugContext_ = 'other context'
-
-    handler.handleLog(NgLogLevel.log, error)
-
-    const args = (<any>xhrSpy).send.calls.argsFor(0)
-    const xhrSendPayload = JSON.parse(args[0])
-    expect(xhrSendPayload).toEqual({logLevel: 'log', params: [{message: error.message, stack: error.stack}]})
-  })
-
-  it('does not post DebugContext_ objects', () => {
-    const handler = getHandler()
-
-    class DebugContext_ {
-    }
-
-    const context = new DebugContext_()
-
-    handler.handleLog(NgLogLevel.log, 'ERROR CONTEXT', context)
-
-    const args = (<any>xhrSpy).send.calls.argsFor(0)
-    const xhrSendPayload = JSON.parse(args[0])
-    expect(xhrSendPayload).toEqual({logLevel: 'log', params: ['ERROR CONTEXT', '[DebugContext_]']})
-  })
-
-  it(`does not change the error property configurable descriptor`, () => {
-    // this test is in here due to a previous implementation that would alter the Error object to get it to serialize properly.
-    // However, the error object should not be altered for serialization purposes.
-
-    const handler = getHandler()
-    const error = new Error(`log error`)
-
-    handler.handleLog(NgLogLevel.log, [error])
-
-    const messageDescriptor = Object.getOwnPropertyDescriptor(error, 'message')
-    const stackDescriptor = Object.getOwnPropertyDescriptor(error, 'stack')
-    expect(messageDescriptor.enumerable).toBeFalsy()
-    expect(stackDescriptor.enumerable).toBeFalsy()
   })
 
 })

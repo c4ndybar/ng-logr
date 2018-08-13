@@ -3,22 +3,21 @@ import {NgModule} from '@angular/core'
 import {AppComponent} from './app.component'
 import {ConsoleLogHandler, INgLogOptions, NgLogHandler, NgLogLevel, NgLogModule, NgLogOptions} from 'nglog'
 import iziToast from 'izitoast'
+import {SerializerUtility} from 'nglog'
 
 // declare var iziToast: any
 
 class TimestampConsoleLogHandler extends ConsoleLogHandler {
-
   handleLog(level: NgLogLevel, ...params: any[]) {
     super.handleLog(level, (new Date()).toLocaleString(), ...params)
   }
 }
 
 class ToastLogHandler extends NgLogHandler {
-
   handleLog(level: NgLogLevel, ...params: any[]) {
     iziToast.show({
       title: NgLogLevel[level] + ' message',
-      message: JSON.stringify(params)
+      message: SerializerUtility.stringify(params)
     })
   }
 }

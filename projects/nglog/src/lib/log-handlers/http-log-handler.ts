@@ -1,7 +1,6 @@
-import {INgLogHandlerOptions} from './ng-log-handler'
+import {INgLogHandlerOptions, NgLogHandler} from './ng-log-handler'
 import {NgLogLevel} from '../ng-log-level'
-import stringify from 'fast-safe-stringify'
-import {NgLogHandler} from './ng-log-handler'
+import {SerializerUtility} from '../util/serialize-utility'
 
 export interface IHttpLogHandlerOptions extends INgLogHandlerOptions {
   httpPostRoute?: string
@@ -45,25 +44,6 @@ export class HttpLogHandler extends NgLogHandler {
       params
     }
 
-    return stringify(data, this.replacer)
-  }
-
-  private replacer(_key, value) {
-    if (value instanceof Error) {
-      const error = {}
-
-      // remove the angular properties from the error object because we do not want to post that data.
-      // we also need to make the stack and message properties are enumerable
-      Object.getOwnPropertyNames(value).forEach(function (key) {
-        if (!['ngDebugContext', 'ngErrorLogger', 'DebugContext_'].includes(key)) {
-          error[key] = value[key]
-        }
-      })
-      value = error
-    } else if (value.constructor.name === 'DebugContext_') {
-      value = '[DebugContext_]'
-    }
-
-    return value
+    return SerializerUtility.stringify(data)
   }
 }
