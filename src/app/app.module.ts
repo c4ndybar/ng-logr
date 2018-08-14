@@ -1,11 +1,8 @@
 import {BrowserModule} from '@angular/platform-browser'
 import {NgModule} from '@angular/core'
 import {AppComponent} from './app.component'
-import {ConsoleLogHandler, INgLogOptions, NgLogHandler, NgLogLevel, NgLogModule, NgLogOptions} from 'nglog'
+import {SerializerUtility, ConsoleLogHandler, INgLogOptions, NgLogHandler, NgLogLevel, NgLogModule, NgLogOptions} from 'nglog'
 import iziToast from 'izitoast'
-import {SerializerUtility} from 'nglog'
-
-// declare var iziToast: any
 
 class TimestampConsoleLogHandler extends ConsoleLogHandler {
   handleLog(level: NgLogLevel, ...params: any[]) {
