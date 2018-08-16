@@ -1,4 +1,4 @@
-#Ng Logr
+# Ng Logr
 This is the test app for ng-logr.  To view the ng-logr code, go to *\projects\ng-logr*.
 
 ### Running the test app
