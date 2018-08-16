@@ -123,38 +123,38 @@
         }
       }
     },
-    "nglog": {
-      "root": "projects/nglog",
-      "sourceRoot": "projects/nglog/src",
+    "ng-logr": {
+      "root": "projects/ng-logr",
+      "sourceRoot": "projects/ng-logr/src",
       "projectType": "library",
       "prefix": "log",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "projects/nglog/tsconfig.lib.json",
-            "project": "projects/nglog/ng-package.json"
+            "tsConfig": "projects/ng-logr/tsconfig.lib.json",
+            "project": "projects/ng-logr/ng-package.json"
           },
           "configurations": {
             "production": {
-              "project": "projects/nglog/ng-package.prod.json"
+              "project": "projects/ng-logr/ng-package.prod.json"
             }
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/nglog/src/test.ts",
-            "tsConfig": "projects/nglog/tsconfig.spec.json",
-            "karmaConfig": "projects/nglog/karma.conf.js"
+            "main": "projects/ng-logr/src/test.ts",
+            "tsConfig": "projects/ng-logr/tsconfig.spec.json",
+            "karmaConfig": "projects/ng-logr/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/nglog/tsconfig.lib.json",
-              "projects/nglog/tsconfig.spec.json"
+              "projects/ng-logr/tsconfig.lib.json",
+              "projects/ng-logr/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"

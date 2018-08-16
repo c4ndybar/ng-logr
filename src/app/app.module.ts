@@ -1,7 +1,7 @@
 import {BrowserModule} from '@angular/platform-browser'
 import {NgModule} from '@angular/core'
 import {AppComponent} from './app.component'
-import {SerializerUtility, ConsoleLogHandler, INgLogOptions, NgLogHandler, NgLogLevel, NgLogModule, NgLogOptions} from 'nglog'
+import {SerializerUtility, ConsoleLogHandler, INgLogOptions, NgLogHandler, NgLogLevel, NgLogModule, NgLogOptions} from 'ng-logr'
 import iziToast from 'izitoast'
 
 class TimestampConsoleLogHandler extends ConsoleLogHandler {

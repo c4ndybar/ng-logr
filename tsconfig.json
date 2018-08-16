@@ -17,11 +17,11 @@
       "dom"
     ],
     "paths": {
-      "nglog": [
-        "dist/nglog"
+      "ng-logr": [
+        "dist/ng-logr"
       ],
-      "nglog/*": [
-        "dist/nglog/*"
+      "ng-logr/*": [
+        "dist/ng-logr/*"
       ]
     }
   }

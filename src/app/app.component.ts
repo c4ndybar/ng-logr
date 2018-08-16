@@ -1,5 +1,5 @@
 import {Component} from '@angular/core'
-import {NgLog} from 'nglog'
+import {NgLog} from 'ng-logr'
 
 @Component({
   selector: 'app-root',

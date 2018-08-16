@@ -1,5 +1,5 @@
 
-# Nglog
+# Ng Logr
 **Currently in Beta**
 
 Angular logger that is designed to be simple and configurable.  Ships with the following features.
@@ -9,14 +9,14 @@ Angular logger that is designed to be simple and configurable.  Ships with the f
 - Uncaught exception handling
   - Provides an exception handler by default that extends Angular's built in ErrorHandler but uses NgLog to log the errors.
 - Cascading configuration.
-- Ability to provide new log handlers or extend existing ones.
+- Ability to provide custom log handlers or extend existing ones.
 
 ## Quick Start
 install the library
 
-`npm install --save nglog`
+`npm install --save ng-logr`
 
-Import `NgLogModule` into your apps root module.
+Import `NgLogModule` into your app's root module.
 ```typescript
 import {NgModule} from '@angular/core'
 import {NgLogModule} from 'nglog'
@@ -30,13 +30,13 @@ export class AppModule {
 }
 ```
 
-Use it in your app to log stuff
+Use the `NgLog` service in your app to log stuff
 
 ```typescript
 import {Injectable} from '@angular/core'
 import {NgLog} from 'nglog'
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class MyService {
 
   constructor(nglog: NgLog) { 
