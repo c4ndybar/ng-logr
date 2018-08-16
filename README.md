@@ -1,5 +1,5 @@
 # Ng Logr
-This is the test app for ng-logr.  To view the ng-logr code, go to *\projects\ng-logr*.
+This is the test app for **ng-logr**.  To view the ng-logr code, go to [/projects/ng-logr](/projects/ng-logr).
 
 ### Running the test app
 Build ng-logr
