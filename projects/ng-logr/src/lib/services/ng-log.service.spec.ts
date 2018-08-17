@@ -203,6 +203,17 @@ describe('NgLog', () => {
       expect((<any>service).logHandlers[0].logLevel).toEqual(defaultNgLogOptions.logLevel)
     })
 
+    it('sets the handler log level to the global log level if provided', () => {
+      const options = {
+        logLevel: NgLogLevel.warn,
+        logHandlers: [handlerSpy]
+      }
+
+      service = getService(options)
+
+      expect((<any>service).logHandlers[0].logLevel).toEqual(NgLogLevel.warn)
+    })
+
     it('uses the handler log level if it is provided', () => {
       handlerSpy.logLevel = NgLogLevel.error
 

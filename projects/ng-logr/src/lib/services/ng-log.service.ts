@@ -1,6 +1,6 @@
 import {Inject, Injectable} from '@angular/core'
 import {defaultNgLogOptions, INgLogOptions, NgLogOptions} from '../ng-log-options'
-import {defaultNgLogHandlerOptions, NgLogHandler} from '../log-handlers/ng-log-handler'
+import {NgLogHandler} from '../log-handlers/ng-log-handler'
 import {NgLogLevel} from '../ng-log-level'
 
 @Injectable({providedIn: 'root'})
@@ -13,7 +13,7 @@ export class NgLog {
     this.logHandlers = options.logHandlers
 
     for (const handler of this.logHandlers) {
-      Object.assign(handler, defaultNgLogHandlerOptions, {...handler})
+      Object.assign(handler, options, {...handler})
     }
   }
 

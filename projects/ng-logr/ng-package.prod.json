@@ -3,5 +3,8 @@
   "dest": "../../dist/ng-logr",
   "lib": {
     "entryFile": "src/public_api.ts"
-  }
+  },
+  "whitelistedNonPeerDependencies": [
+    "fast-safe-stringify"
+  ]
 }

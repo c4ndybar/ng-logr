@@ -20,7 +20,7 @@ class ToastLogHandler extends NgLogHandler {
 }
 
 const options: INgLogOptions = {
-  logLevel: NgLogLevel.debug,
+  logLevel: NgLogLevel.error,
   logHandlers: [
     new TimestampConsoleLogHandler(),
     new ToastLogHandler()
