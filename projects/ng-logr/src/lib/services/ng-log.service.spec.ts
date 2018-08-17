@@ -36,195 +36,159 @@ describe('NgLog', () => {
       service = getService(options)
     })
 
-    it('calls handler.log', (done) => {
+    it('calls handler.log', () => {
       service.log('log message')
-        .then(() => {
-          expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.log, 'log message')
-          expect(otherHandlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.log, 'log message')
-        }).catch(fail).then(done)
+
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.log, 'log message')
+      expect(otherHandlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.log, 'log message')
     })
 
-    it('calls handler.debug', (done) => {
+    it('calls handler.debug', () => {
       service.debug('debug message')
-        .then(() => {
-          expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.debug, 'debug message')
-          expect(otherHandlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.debug, 'debug message')
-        }).catch(fail).then(done)
+
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.debug, 'debug message')
+      expect(otherHandlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.debug, 'debug message')
     })
 
-    it('calls handler.warn', (done) => {
+    it('calls handler.warn', () => {
       service.warn('warn message')
-        .then(() => {
-          expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.warn, 'warn message')
-          expect(otherHandlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.warn, 'warn message')
-        }).catch(fail).then(done)
+
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.warn, 'warn message')
+      expect(otherHandlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.warn, 'warn message')
     })
 
-    it('calls handler.info', (done) => {
+    it('calls handler.info', () => {
       service.info('info message')
-        .then(() => {
-          expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.info, 'info message')
-          expect(otherHandlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.info, 'info message')
-        }).catch(fail).then(done)
+
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.info, 'info message')
+      expect(otherHandlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.info, 'info message')
     })
 
-    it('calls handler.error', (done) => {
+    it('calls handler.error', () => {
       service.error('error message')
-        .then(() => {
-          expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.error, 'error message')
-          expect(otherHandlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.error, 'error message')
-        }).catch(fail).then(done)
+
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.error, 'error message')
+      expect(otherHandlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.error, 'error message')
     })
 
-    it('calls handler.log with multiple params', (done) => {
+    it('calls handler.log with multiple params', () => {
       service.log('log message', 'and more log')
-        .then(() => {
-          expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.log, 'log message', 'and more log')
-          expect(otherHandlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.log, 'log message', 'and more log')
-        }).catch(fail).then(done)
+
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.log, 'log message', 'and more log')
+      expect(otherHandlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.log, 'log message', 'and more log')
     })
 
   })
 
   describe('calls the provided handler but limits by log level', () => {
-    it('does not limit calls when handler has level debug', async (done) => {
-      try {
-        handlerSpy.logLevel = NgLogLevel.debug
+    it('does not limit calls when handler has level debug', () => {
+      handlerSpy.logLevel = NgLogLevel.debug
 
-        const options = {
-          logHandlers: [handlerSpy]
-        }
-
-        service = getService(options)
-
-        await service.debug('debug message')
-        await service.info('info message')
-        await service.log('log message')
-        await service.warn('warn message')
-        await service.error('error message')
-
-        expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.debug, 'debug message')
-        expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.info, 'info message')
-        expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.log, 'log message')
-        expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.warn, 'warn message')
-        expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.error, 'error message')
-      } catch (ex) {
-        fail(ex)
-      } finally {
-        done()
+      const options = {
+        logHandlers: [handlerSpy]
       }
+
+      service = getService(options)
+
+      service.debug('debug message')
+      service.info('info message')
+      service.log('log message')
+      service.warn('warn message')
+      service.error('error message')
+
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.debug, 'debug message')
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.info, 'info message')
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.log, 'log message')
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.warn, 'warn message')
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.error, 'error message')
     })
 
-    it('limits calls if level is info', async (done) => {
-      try {
-        handlerSpy.logLevel = NgLogLevel.info
+    it('limits calls if level is info', () => {
+      handlerSpy.logLevel = NgLogLevel.info
 
-        const options = {
-          logHandlers: [handlerSpy]
-        }
-
-        service = getService(options)
-
-        await service.debug('debug message')
-        await service.info('info message')
-        await service.log('log message')
-        await service.warn('warn message')
-        await service.error('error message')
-
-        expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.debug, 'debug message')
-        expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.info, 'info message')
-        expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.log, 'log message')
-        expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.warn, 'warn message')
-        expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.error, 'error message')
-      } catch (ex) {
-        fail(ex)
-      } finally {
-        done()
+      const options = {
+        logHandlers: [handlerSpy]
       }
+
+      service = getService(options)
+
+      service.debug('debug message')
+      service.info('info message')
+      service.log('log message')
+      service.warn('warn message')
+      service.error('error message')
+
+      expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.debug, 'debug message')
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.info, 'info message')
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.log, 'log message')
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.warn, 'warn message')
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.error, 'error message')
     })
 
-    it('limits calls if level is log', async (done) => {
-      try {
-        handlerSpy.logLevel = NgLogLevel.log
+    it('limits calls if level is log', () => {
+      handlerSpy.logLevel = NgLogLevel.log
 
-        const options = {
-          logHandlers: [handlerSpy]
-        }
-
-        service = getService(options)
-
-        await service.debug('debug message')
-        await service.info('info message')
-        await service.log('log message')
-        await service.warn('warn message')
-        await service.error('error message')
-
-        expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.debug, 'debug message')
-        expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.info, 'info message')
-        expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.log, 'log message')
-        expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.warn, 'warn message')
-        expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.error, 'error message')
-      } catch (ex) {
-        fail(ex)
-      } finally {
-        done()
+      const options = {
+        logHandlers: [handlerSpy]
       }
+
+      service = getService(options)
+
+      service.debug('debug message')
+      service.info('info message')
+      service.log('log message')
+      service.warn('warn message')
+      service.error('error message')
+
+      expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.debug, 'debug message')
+      expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.info, 'info message')
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.log, 'log message')
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.warn, 'warn message')
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.error, 'error message')
     })
 
-    it('limits calls if level is warn', async (done) => {
-      try {
-        handlerSpy.logLevel = NgLogLevel.warn
+    it('limits calls if level is warn', () => {
+      handlerSpy.logLevel = NgLogLevel.warn
 
-        const options = {
-          logHandlers: [handlerSpy]
-        }
-
-        service = getService(options)
-
-        await service.debug('debug message')
-        await service.info('info message')
-        await service.log('log message')
-        await service.warn('warn message')
-        await service.error('error message')
-
-        expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.debug, 'debug message')
-        expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.info, 'info message')
-        expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.log, 'log message')
-        expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.warn, 'warn message')
-        expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.error, 'error message')
-      } catch (ex) {
-        fail(ex)
-      } finally {
-        done()
+      const options = {
+        logHandlers: [handlerSpy]
       }
+
+      service = getService(options)
+
+      service.debug('debug message')
+      service.info('info message')
+      service.log('log message')
+      service.warn('warn message')
+      service.error('error message')
+
+      expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.debug, 'debug message')
+      expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.info, 'info message')
+      expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.log, 'log message')
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.warn, 'warn message')
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.error, 'error message')
     })
 
-    it('limits calls if level is error', async (done) => {
-      try {
-        handlerSpy.logLevel = NgLogLevel.error
+    it('limits calls if level is error', () => {
+      handlerSpy.logLevel = NgLogLevel.error
 
-        const options = {
-          logHandlers: [handlerSpy]
-        }
-
-        service = getService(options)
-
-        await service.debug('debug message')
-        await service.info('info message')
-        await service.log('log message')
-        await service.warn('warn message')
-        await service.error('error message')
-
-        expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.debug, 'debug message')
-        expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.info, 'info message')
-        expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.log, 'log message')
-        expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.warn, 'warn message')
-        expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.error, 'error message')
-      } catch (ex) {
-        fail(ex)
-      } finally {
-        done()
+      const options = {
+        logHandlers: [handlerSpy]
       }
+
+      service = getService(options)
+
+      service.debug('debug message')
+      service.info('info message')
+      service.log('log message')
+      service.warn('warn message')
+      service.error('error message')
+
+      expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.debug, 'debug message')
+      expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.info, 'info message')
+      expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.log, 'log message')
+      expect(handlerSpy.handleLog).not.toHaveBeenCalledWith(NgLogLevel.warn, 'warn message')
+      expect(handlerSpy.handleLog).toHaveBeenCalledWith(NgLogLevel.error, 'error message')
     })
   })
 

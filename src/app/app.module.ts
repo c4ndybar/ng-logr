@@ -3,10 +3,11 @@ import {NgModule} from '@angular/core'
 import {AppComponent} from './app.component'
 import {SerializerUtility, ConsoleLogHandler, INgLogOptions, NgLogHandler, NgLogLevel, NgLogModule, NgLogOptions} from 'ng-logr'
 import iziToast from 'izitoast'
+import {HttpLogHandler} from '../../projects/ng-logr/src/lib/log-handlers/http-log-handler'
 
 class TimestampConsoleLogHandler extends ConsoleLogHandler {
   async handleLog(level: NgLogLevel, ...params: any[]) {
-    super.handleLog(level, (new Date()).toLocaleString(), ...params)
+    return super.handleLog(level, (new Date()).toLocaleString(), ...params)
   }
 }
 
@@ -23,7 +24,8 @@ const options: INgLogOptions = {
   logLevel: NgLogLevel.error,
   logHandlers: [
     new TimestampConsoleLogHandler(),
-    new ToastLogHandler()
+    new ToastLogHandler(),
+    new HttpLogHandler({httpPostRoute: 'http://localhost:4201/log'}),
   ]
 }
 
