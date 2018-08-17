@@ -19,7 +19,7 @@ install the library
 Import `NgLogModule` into your app's root module.
 ```typescript
 import {NgModule} from '@angular/core'
-import {NgLogModule} from 'nglog'
+import {NgLogModule} from 'ng-logr'
 
 @NgModule({
   imports: [
@@ -34,7 +34,7 @@ Use the `NgLog` service in your app to log stuff
 
 ```typescript
 import {Injectable} from '@angular/core'
-import {NgLog} from 'nglog'
+import {NgLog} from 'ng-logr'
 
 @Injectable()
 export class MyService {
@@ -72,8 +72,8 @@ To override the configuration, provide `NgLogOptions` when declaring your root m
 
 ```typescript
 import {NgModule} from '@angular/core'
-import {INgLogOptions, NgLogLevel, NgLogModule, NgLogOptions,} from 'nglog'
-import {ConsoleLogHandler} from 'nglog'
+import {INgLogOptions, NgLogLevel, NgLogModule, NgLogOptions,} from 'ng-logr'
+import {ConsoleLogHandler} from 'ng-logr'
 
 const options: INgLogOptions = {
   logLevel: NgLogLevel.error,
@@ -97,7 +97,7 @@ export class AppModule {
 
 Include the `HttpLogHandler` when defining your log handlers in your configuration options.  This log handler posts logs to your sever at the endpoint `/log`.  You can override the log post route by defining the option `postHttpRoute` as shown in the example below.
 ```typescript
-import {ConsoleLogHandler, HttpLogHandler} from 'nglog'
+import {ConsoleLogHandler, HttpLogHandler} from 'ng-logr'
 
 const httpHandler = new HttpLogHandler({
   postHttpRoute: 'serverLogRoute'
@@ -110,7 +110,7 @@ const options: INgLogOptions = {
 
 The default log level for NgLog is `debug`.  You can override this globally by providing the option `logLevel` in the `NgLogOptions`.  You can also provide the `logLevel` option to a handler to override the log level for that particular handler.
 ```typescript
-import {ConsoleLogHandler, HttpLogHandler} from 'nglog'
+import {ConsoleLogHandler, HttpLogHandler} from 'ng-logr'
 
 const httpHandler = new HttpLogHandler({
   logLevel: NgLogLevel.error
