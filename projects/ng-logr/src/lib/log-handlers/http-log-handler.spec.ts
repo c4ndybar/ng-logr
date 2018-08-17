@@ -63,8 +63,12 @@ describe('HttpLogHandler', () => {
 
     })
 
-    it('ignores ready states except for done', () => {
+    it('ignores ready states except for done', (done) => {
       getHandler().handleLog(NgLogLevel.log, 'log message')
+        .then(fail)
+        .catch(() => {
+          expect(xhrSpy.readyState).toEqual(XMLHttpRequest.DONE)
+        }).then(done)
 
       xhrSpy.status = 404
 
@@ -80,30 +84,49 @@ describe('HttpLogHandler', () => {
       xhrSpy.readyState = XMLHttpRequest.LOADING
       xhrSpy.onreadystatechange({} as Event)
 
-      expect(debugSpy).not.toHaveBeenCalled()
+      xhrSpy.readyState = XMLHttpRequest.DONE
+      xhrSpy.onreadystatechange({} as Event)
     })
 
-    it('logs error if status is not 200 and request is done', () => {
+    it('logs error if status is not 200 and request is done', (done) => {
       getHandler().handleLog(NgLogLevel.log, 'log message', {x: 'yz'})
+        .then(fail)
+        .catch(() => {
+          expect(debugSpy).toHaveBeenCalledWith('XHR failed', xhrSpy)
+          expect(debugSpy).toHaveBeenCalledWith('Log was not posted - ', 'log', ['log message', {x: 'yz'}])
+        }).then(done)
 
       xhrSpy.status = 404
       xhrSpy.readyState = XMLHttpRequest.DONE
       xhrSpy.onreadystatechange({} as Event)
-
-      expect(debugSpy).toHaveBeenCalledWith('XHR failed', xhrSpy)
-      expect(debugSpy).toHaveBeenCalledWith('Log was not posted - ', 'log', ['log message', {x: 'yz'}])
     })
 
-    it('logs an debug message if something fails', () => {
+    it('returns if success', (done) => {
+      getHandler().handleLog(NgLogLevel.log, 'log message', {x: 'yz'})
+        .then(() => {
+          expect(debugSpy).not.toHaveBeenCalled()
+          expect(debugSpy).not.toHaveBeenCalled()
+        }).catch(fail).then(done)
+
+      xhrSpy.status = 200
+      xhrSpy.readyState = XMLHttpRequest.DONE
+      xhrSpy.onreadystatechange({} as Event)
+    })
+
+    it('logs a debug message if something fails', (done) => {
       const error = new Error('send failed')
       xhrSpy.send.and.callFake(() => {
         throw error
       })
 
       getHandler().handleLog(NgLogLevel.log, 'log message', {x: 'yz'})
+        .then(fail)
+        .catch((err) => {
+          expect(debugSpy).toHaveBeenCalledWith('Error while trying to post log - ', error)
+          expect(debugSpy).toHaveBeenCalledWith('Log was not posted - ', 'log', ['log message', {x: 'yz'}])
 
-      expect(debugSpy).toHaveBeenCalledWith('Error while trying to post log - ', error)
-      expect(debugSpy).toHaveBeenCalledWith('Log was not posted - ', 'log', ['log message', {x: 'yz'}])
+          expect(err).toBe(error)
+        }).then(done)
     })
   })
 

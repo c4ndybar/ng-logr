@@ -5,13 +5,13 @@ import {SerializerUtility, ConsoleLogHandler, INgLogOptions, NgLogHandler, NgLog
 import iziToast from 'izitoast'
 
 class TimestampConsoleLogHandler extends ConsoleLogHandler {
-  handleLog(level: NgLogLevel, ...params: any[]) {
+  async handleLog(level: NgLogLevel, ...params: any[]) {
     super.handleLog(level, (new Date()).toLocaleString(), ...params)
   }
 }
 
 class ToastLogHandler extends NgLogHandler {
-  handleLog(level: NgLogLevel, ...params: any[]) {
+  async handleLog(level: NgLogLevel, ...params: any[]) {
     iziToast.show({
       title: NgLogLevel[level] + ' message',
       message: SerializerUtility.stringify(params)

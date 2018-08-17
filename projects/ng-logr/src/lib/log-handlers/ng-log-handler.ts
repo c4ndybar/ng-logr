@@ -15,5 +15,5 @@ export abstract class NgLogHandler {
     Object.assign(<any>this, options)
   }
 
-  abstract handleLog(logLevel: NgLogLevel, ...logParams: any[])
+  abstract async handleLog(logLevel: NgLogLevel, ...logParams: any[])
 }

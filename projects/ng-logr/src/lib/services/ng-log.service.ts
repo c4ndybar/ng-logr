@@ -17,24 +17,24 @@ export class NgLog {
     }
   }
 
-  debug(message?: any, ...params: any[]): void {
-    this.handleLog(NgLogLevel.debug, message, ...params)
+  async debug(message?: any, ...params: any[]): Promise<void> {
+    return this.handleLog(NgLogLevel.debug, message, ...params)
   }
 
-  info(message?: any, ...params: any[]): void {
-    this.handleLog(NgLogLevel.info, message, ...params)
+  async info(message?: any, ...params: any[]): Promise<void> {
+    return this.handleLog(NgLogLevel.info, message, ...params)
   }
 
-  log(message?: any, ...params: any[]): void {
-    this.handleLog(NgLogLevel.log, message, ...params)
+  async log(message?: any, ...params: any[]): Promise<void> {
+    return this.handleLog(NgLogLevel.log, message, ...params)
   }
 
-  warn(message?: any, ...params: any[]): void {
-    this.handleLog(NgLogLevel.warn, message, ...params)
+  async warn(message?: any, ...params: any[]): Promise<void> {
+    return this.handleLog(NgLogLevel.warn, message, ...params)
   }
 
-  error(message?: any, ...params: any[]) {
-    this.handleLog(NgLogLevel.error, message, ...params)
+  async error(message?: any, ...params: any[]): Promise<void> {
+    return this.handleLog(NgLogLevel.error, message, ...params)
   }
 
   private handleLog(level: NgLogLevel, ...params) {

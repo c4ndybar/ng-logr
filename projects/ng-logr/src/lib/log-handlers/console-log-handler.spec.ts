@@ -38,40 +38,59 @@ describe('ConsoleLogHandler', () => {
       expect(handler).toBeTruthy()
     })
 
-    it('calls console.log', () => {
+    it('calls console.log', (done) => {
       handler.handleLog(NgLogLevel.log, 'log message')
-
-      expect(logSpy).toHaveBeenCalledWith('log message')
+        .then(() => {
+          expect(logSpy).toHaveBeenCalledWith('log message')
+        })
+        .catch(fail)
+        .then(done)
     })
 
-    it('calls console.debug', () => {
+    it('calls console.debug', (done) => {
       handler.handleLog(NgLogLevel.debug, 'debug message')
+        .then(() => {
+          expect(debugSpy).toHaveBeenCalledWith('debug message')
+        })
+        .catch(fail)
+        .then(done)
 
-      expect(debugSpy).toHaveBeenCalledWith('debug message')
     })
 
-    it('calls console.warn', () => {
+    it('calls console.warn', (done) => {
       handler.handleLog(NgLogLevel.warn, 'warn message')
-
-      expect(warnSpy).toHaveBeenCalledWith('warn message')
+        .then(() => {
+          expect(warnSpy).toHaveBeenCalledWith('warn message')
+        })
+        .catch(fail)
+        .then(done)
     })
 
-    it('calls console.info', () => {
+    it('calls console.info', (done) => {
       handler.handleLog(NgLogLevel.info, 'info message')
-
-      expect(infoSpy).toHaveBeenCalledWith('info message')
+        .then(() => {
+          expect(infoSpy).toHaveBeenCalledWith('info message')
+        })
+        .catch(fail)
+        .then(done)
     })
 
-    it('calls console.error', () => {
+    it('calls console.error', (done) => {
       handler.handleLog(NgLogLevel.error, 'error message')
-
-      expect(errorSpy).toHaveBeenCalledWith('error message')
+        .then(() => {
+          expect(errorSpy).toHaveBeenCalledWith('error message')
+        })
+        .catch(fail)
+        .then(done)
     })
 
-    it('calls console.log with multiple params', () => {
+    it('calls console.log with multiple params', (done) => {
       handler.handleLog(NgLogLevel.log, 'log message', 'and more log')
-
-      expect(logSpy).toHaveBeenCalledWith('log message', 'and more log')
+        .then(() => {
+          expect(logSpy).toHaveBeenCalledWith('log message', 'and more log')
+        })
+        .catch(fail)
+        .then(done)
     })
 
   })
