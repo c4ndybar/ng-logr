@@ -127,7 +127,7 @@ Just create a class that extends `NgLogHandler` and include it as a `logHandler`
 
 ```typescript
 class AwesomeHandler extends NgLogHandler {
-  handleLog(logLevel: NgLogLevel, ...logParams: any[]) {
+  async handleLog(logLevel: NgLogLevel, ...logParams: any[]) {
     const logLevelName = NgLogLevel[logLevel]
 
     console[logLevelName]('AWESOME', ...logParams)
@@ -136,5 +136,23 @@ class AwesomeHandler extends NgLogHandler {
 
 const options: INgLogOptions = {
   logHandlers: [new AwesomeHandler()]
+}
+```
+
+#### Extending a log handler
+
+Extend any included log handler
+
+```typescript
+import {ConsoleLogHandler} from 'ng-logr'
+
+class TimestampConsoleLogHandler extends ConsoleLogHandler {
+  async handleLog(level: NgLogLevel, ...params: any[]) {
+    super.handleLog(level, (new Date()).toLocaleString(), ...params)
+  }
+}
+
+const options: INgLogOptions = {
+  logHandlers: [new TimestampConsoleLogHandler()]
 }
 ```

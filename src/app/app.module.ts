@@ -7,7 +7,7 @@ import {HttpLogHandler} from '../../projects/ng-logr/src/lib/log-handlers/http-l
 
 class TimestampConsoleLogHandler extends ConsoleLogHandler {
   async handleLog(level: NgLogLevel, ...params: any[]) {
-    return super.handleLog(level, (new Date()).toLocaleString(), ...params)
+    super.handleLog(level, (new Date()).toLocaleString(), ...params)
   }
 }
 

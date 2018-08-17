@@ -12,6 +12,9 @@ describe('NgLog', () => {
   beforeEach(() => {
     handlerSpy = jasmine.createSpyObj('handler', ['handleLog'])
     otherHandlerSpy = jasmine.createSpyObj('otherHandler', ['handleLog'])
+
+    handlerSpy.handleLog.and.returnValue(Promise.resolve())
+    otherHandlerSpy.handleLog.and.returnValue(Promise.resolve())
   })
 
   function getService(options: INgLogOptions): NgLog {
