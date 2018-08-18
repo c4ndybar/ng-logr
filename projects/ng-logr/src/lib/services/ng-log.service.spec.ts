@@ -6,8 +6,8 @@ import {NgLogLevel} from '../ng-log-level'
 
 describe('NgLog', () => {
   let service: NgLog
-  let handlerSpy: NgLogHandler
-  let otherHandlerSpy: NgLogHandler
+  let handlerSpy: any
+  let otherHandlerSpy: any
 
   beforeEach(() => {
     handlerSpy = jasmine.createSpyObj('handler', ['handleLog'])

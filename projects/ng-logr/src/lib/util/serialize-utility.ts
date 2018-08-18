@@ -1,4 +1,4 @@
-import safeStringify from 'fast-safe-stringify'
+import safeStringify from 'safe-stable-stringify'
 
 export class SerializerUtility {
   public static stringify(obj): string {
@@ -32,7 +32,7 @@ export class SerializerUtility {
       return '[DebugContext_]'
     }
 
-    return safeStringify(obj, replacer)
+    return (safeStringify as any)(obj, replacer)
   }
 
 

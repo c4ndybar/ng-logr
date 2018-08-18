@@ -34,4 +34,5 @@ export class AppComponent {
   logLog() {
     this.nglog.log('log log')
   }
+
 }
