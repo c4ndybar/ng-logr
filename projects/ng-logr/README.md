@@ -1,5 +1,5 @@
 
-# Ng Logr
+# Ng-logr
 **Currently in Beta**
 
 Angular logger that is designed to be simple and configurable.  Ships with the following features.
@@ -156,3 +156,12 @@ const options: INgLogOptions = {
   logHandlers: [new TimestampConsoleLogHandler()]
 }
 ```
+
+## Contributing
+
+This library is still in beta.  Contributions are more than welcome.  Some things to focus on...
+- Bug fixes.
+- Support previous versions of Angular (at least Angular 4+).  The library only supports Angular 6 currently.
+- Make the logs fail silently (or log debug statements to the console if not in production mode).
+- Add a way to include contextual information posting logs from `HttpLogHandler` (i.e. browser version, device, os version, etc.)
+- Additional log handlers that are useful.
