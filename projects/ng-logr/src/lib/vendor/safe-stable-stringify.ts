@@ -1,6 +1,15 @@
+// This is the safe-stable-stringify library, but it has been transpiled down to from es6 to es5 for compatibility reasons.
+// https://github.com/BridgeAR/safe-stable-stringify
+
+/* tslint:disable */
+
 'use strict'
 
-module.exports = stringify
+const _typeof = typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol' ? function (obj) {
+  return typeof obj
+} : function (obj) {
+  return obj && typeof Symbol === 'function' && obj.constructor === Symbol && obj !== Symbol.prototype ? 'symbol' : typeof obj
+}
 
 var gap = ''
 // eslint-disable-next-line
@@ -9,29 +18,17 @@ const strEscapeSequencesRegExp = /[\x00-\x1f\x22\x5c]/
 const strEscapeSequencesReplacer = /[\x00-\x1f\x22\x5c]/g
 
 // Escaped special characters. Use empty strings to fill up unused entries.
-const meta = [
-  '\\u0000', '\\u0001', '\\u0002', '\\u0003', '\\u0004',
-  '\\u0005', '\\u0006', '\\u0007', '\\b', '\\t',
-  '\\n', '\\u000b', '\\f', '\\r', '\\u000e',
-  '\\u000f', '\\u0010', '\\u0011', '\\u0012', '\\u0013',
-  '\\u0014', '\\u0015', '\\u0016', '\\u0017', '\\u0018',
-  '\\u0019', '\\u001a', '\\u001b', '\\u001c', '\\u001d',
-  '\\u001e', '\\u001f', '', '', '\\"',
-  '', '', '', '', '', '', '', '', '', '',
-  '', '', '', '', '', '', '', '', '', '',
-  '', '', '', '', '', '', '', '', '', '',
-  '', '', '', '', '', '', '', '', '', '',
-  '', '', '', '', '', '', '', '', '', '',
-  '', '', '', '', '', '', '', '\\\\'
-]
+const meta = ['\\u0000', '\\u0001', '\\u0002', '\\u0003', '\\u0004', '\\u0005', '\\u0006', '\\u0007', '\\b', '\\t', '\\n', '\\u000b', '\\f', '\\r', '\\u000e', '\\u000f', '\\u0010', '\\u0011', '\\u0012', '\\u0013', '\\u0014', '\\u0015', '\\u0016', '\\u0017', '\\u0018', '\\u0019', '\\u001a', '\\u001b', '\\u001c', '\\u001d', '\\u001e', '\\u001f', '', '', '\\"', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '\\\\']
 
-const escapeFn = (str) => meta[str.charCodeAt(0)]
+const escapeFn = function escapeFn(str) {
+  return meta[str.charCodeAt(0)]
+}
 
 // Escape control characters, double quotes and the backslash.
 // Note: it is faster to run this only once for a big string instead of only for
 // the parts that it is necessary for. But this is only true if we do not add
 // extra indentation to the string before.
-function strEscape (str) {
+function strEscape(str) {
   // Some magic numbers that worked out fine while benchmarking with v8 6.0
   if (str.length < 5000 && !strEscapeSequencesRegExp.test(str)) {
     return str
@@ -47,7 +44,7 @@ function strEscape (str) {
       if (last === i) {
         result += meta[point]
       } else {
-        result += `${str.slice(last, i)}${meta[point]}`
+        result += '' + str.slice(last, i) + meta[point]
       }
       last = i + 1
     }
@@ -61,17 +58,17 @@ function strEscape (str) {
 }
 
 // Full version: supports all options
-function stringifyFullFn (key, parent, stack, replacer, indent) {
+function stringifyFullFn(key, parent, stack, replacer, indent) {
   var i, res, join
   const mind = gap
   var value = parent[key]
 
-  if (typeof value === 'object' && value !== null && typeof value.toJSON === 'function') {
+  if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value !== null && typeof value.toJSON === 'function') {
     value = value.toJSON(key)
   }
   value = replacer.call(parent, key, value)
 
-  switch (typeof value) {
+  switch (typeof value === 'undefined' ? 'undefined' : _typeof(value)) {
     case 'object':
       if (value === null) {
         return 'null'
@@ -92,19 +89,19 @@ function stringifyFullFn (key, parent, stack, replacer, indent) {
         if (gap === '') {
           join = ','
         } else {
-          res += `\n${gap}`
-          join = `,\n${gap}`
+          res += '\n' + gap
+          join = ',\n' + gap
         }
         // Use null as placeholder for non-JSON values.
         for (i = 0; i < value.length - 1; i++) {
-          const tmp = stringifyFullFn(i, value, stack, replacer, indent)
-          res += tmp !== undefined ? tmp : 'null'
+          const _tmp2 = stringifyFullFn(i, value, stack, replacer, indent)
+          res += _tmp2 !== undefined ? _tmp2 : 'null'
           res += join
         }
-        const tmp = stringifyFullFn(i, value, stack, replacer, indent)
-        res += tmp !== undefined ? tmp : 'null'
+        const _tmp = stringifyFullFn(i, value, stack, replacer, indent)
+        res += _tmp !== undefined ? _tmp : 'null'
         if (gap !== '') {
-          res += `\n${mind}`
+          res += '\n' + mind
         }
         res += ']'
         stack.pop()
@@ -121,18 +118,18 @@ function stringifyFullFn (key, parent, stack, replacer, indent) {
       if (gap === '') {
         join = ','
       } else {
-        res += `\n${gap}`
-        join = `,\n${gap}`
+        res += '\n' + gap
+        join = ',\n' + gap
       }
       var last = false
       for (i = 0; i < keys.length - 1; i++) {
         key = keys[i]
-        const tmp = stringifyFullFn(key, value, stack, replacer, indent)
-        if (tmp !== undefined) {
+        const _tmp3 = stringifyFullFn(key, value, stack, replacer, indent)
+        if (_tmp3 !== undefined) {
           if (last) {
             res += join
           }
-          res += `"${strEscape(key)}"${gap !== '' ? ': ' : ':'}${tmp}`
+          res += '"' + strEscape(key) + '"' + (gap !== '' ? ': ' : ':') + _tmp3
           last = true
         }
       }
@@ -143,13 +140,13 @@ function stringifyFullFn (key, parent, stack, replacer, indent) {
           res += join
         }
         if (gap === '') {
-          res += `"${strEscape(key)}":${tmp}`
+          res += '"' + strEscape(key) + '":' + tmp
         } else {
-          res += `"${strEscape(key)}": ${tmp}\n${mind}`
+          res += '"' + strEscape(key) + '": ' + tmp + '\n' + mind
         }
       } else if (gap !== '') {
         if (last) {
-          res += `\n${mind}`
+          res += '\n' + mind
         } else {
           res = '{'
         }
@@ -159,7 +156,7 @@ function stringifyFullFn (key, parent, stack, replacer, indent) {
       gap = mind
       return res
     case 'string':
-      return `"${strEscape(value)}"`
+      return '"' + strEscape(value) + '"'
     case 'number':
       // JSON numbers must be finite. Encode non-finite numbers as null.
       return isFinite(value) ? String(value) : 'null'
@@ -168,15 +165,15 @@ function stringifyFullFn (key, parent, stack, replacer, indent) {
   }
 }
 
-function stringifyFullArr (key, value, stack, replacer, indent) {
+function stringifyFullArr(key, value, stack, replacer, indent) {
   var i, res, join
   const mind = gap
 
-  if (typeof value === 'object' && value !== null && typeof value.toJSON === 'function') {
+  if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value !== null && typeof value.toJSON === 'function') {
     value = value.toJSON(key)
   }
 
-  switch (typeof value) {
+  switch (typeof value === 'undefined' ? 'undefined' : _typeof(value)) {
     case 'object':
       if (value === null) {
         return 'null'
@@ -197,19 +194,19 @@ function stringifyFullArr (key, value, stack, replacer, indent) {
         if (gap === '') {
           join = ','
         } else {
-          res += `\n${gap}`
-          join = `,\n${gap}`
+          res += '\n' + gap
+          join = ',\n' + gap
         }
         // Use null as placeholder for non-JSON values.
         for (i = 0; i < value.length - 1; i++) {
-          const tmp = stringifyFullArr(i, value[i], stack, replacer, indent)
-          res += tmp !== undefined ? tmp : 'null'
+          const _tmp4 = stringifyFullArr(i, value[i], stack, replacer, indent)
+          res += _tmp4 !== undefined ? _tmp4 : 'null'
           res += join
         }
         const tmp = stringifyFullArr(i, value[i], stack, replacer, indent)
         res += tmp !== undefined ? tmp : 'null'
         if (gap !== '') {
-          res += `\n${mind}`
+          res += '\n' + mind
         }
         res += ']'
         stack.pop()
@@ -225,26 +222,26 @@ function stringifyFullArr (key, value, stack, replacer, indent) {
       if (gap === '') {
         join = ','
       } else {
-        res += `\n${gap}`
-        join = `,\n${gap}`
+        res += '\n' + gap
+        join = ',\n' + gap
       }
       var last = false
       for (i = 0; i < replacer.length; i++) {
         if (typeof replacer[i] === 'string' || typeof replacer[i] === 'number') {
           key = replacer[i]
-          const tmp = stringifyFullArr(key, value[key], stack, replacer, indent)
-          if (tmp !== undefined) {
+          const _tmp5 = stringifyFullArr(key, value[key], stack, replacer, indent)
+          if (_tmp5 !== undefined) {
             if (last) {
               res += join
             }
-            res += `"${strEscape(key)}"${gap ? ': ' : ':'}${tmp}`
+            res += '"' + strEscape(key) + '"' + (gap ? ': ' : ':') + _tmp5
             last = true
           }
         }
       }
       if (gap !== '') {
         if (last) {
-          res += `\n${mind}`
+          res += '\n' + mind
         } else {
           res = '{'
         }
@@ -254,7 +251,7 @@ function stringifyFullArr (key, value, stack, replacer, indent) {
       gap = mind
       return res
     case 'string':
-      return `"${strEscape(value)}"`
+      return '"' + strEscape(value) + '"'
     case 'number':
       // JSON numbers must be finite. Encode non-finite numbers as null.
       return isFinite(value) ? String(value) : 'null'
@@ -264,11 +261,11 @@ function stringifyFullArr (key, value, stack, replacer, indent) {
 }
 
 // Supports only the spacer option
-function stringifyIndent (key, value, stack, indent) {
+function stringifyIndent(key, value, stack, indent) {
   var i, res, join, add
   const mind = gap
 
-  switch (typeof value) {
+  switch (typeof value === 'undefined' ? 'undefined' : _typeof(value)) {
     case 'object':
       if (value === null) {
         return 'null'
@@ -276,7 +273,7 @@ function stringifyIndent (key, value, stack, indent) {
       if (typeof value.toJSON === 'function') {
         value = value.toJSON(key)
         // Prevent calling `toJSON` again.
-        if (typeof value !== 'object') {
+        if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object') {
           return stringifyIndent(key, value, stack, indent)
         }
         if (value === null) {
@@ -299,19 +296,19 @@ function stringifyIndent (key, value, stack, indent) {
         if (gap === '') {
           join = ','
         } else {
-          res += `\n${gap}`
-          join = `,\n${gap}`
+          res += '\n' + gap
+          join = ',\n' + gap
         }
         // Use null as placeholder for non-JSON values.
         for (i = 0; i < value.length - 1; i++) {
-          const tmp = stringifyIndent(i, value[i], stack, indent)
-          res += tmp !== undefined ? tmp : 'null'
+          const _tmp7 = stringifyIndent(i, value[i], stack, indent)
+          res += _tmp7 !== undefined ? _tmp7 : 'null'
           res += join
         }
-        const tmp = stringifyIndent(i, value[i], stack, indent)
-        res += tmp !== undefined ? tmp : 'null'
+        const _tmp6 = stringifyIndent(i, value[i], stack, indent)
+        res += _tmp6 !== undefined ? _tmp6 : 'null'
         if (gap !== '') {
-          res += `\n${mind}`
+          res += '\n' + mind
         }
         res += ']'
         stack.pop()
@@ -329,23 +326,23 @@ function stringifyIndent (key, value, stack, indent) {
         join = ','
         add = ''
       } else {
-        add = `\n${gap}`
-        join = `,\n${gap}`
+        add = '\n' + gap
+        join = ',\n' + gap
       }
       for (i = 0; i < keys.length - 1; i++) {
         key = keys[i]
-        const tmp = stringifyIndent(key, value[key], stack, indent)
-        if (tmp !== undefined) {
-          add += `"${strEscape(key)}"${gap ? ': ' : ':'}${tmp}${join}`
+        const _tmp8 = stringifyIndent(key, value[key], stack, indent)
+        if (_tmp8 !== undefined) {
+          add += '"' + strEscape(key) + '"' + (gap ? ': ' : ':') + _tmp8 + join
         }
       }
       key = keys[i]
       const tmp = stringifyIndent(key, value[key], stack, indent)
       if (tmp !== undefined) {
         if (gap === '') {
-          add += `"${strEscape(key)}":${tmp}`
+          add += '"' + strEscape(key) + '":' + tmp
         } else {
-          add += `"${strEscape(key)}": ${tmp}\n${mind}`
+          add += '"' + strEscape(key) + '": ' + tmp + '\n' + mind
         }
       }
       if (add.length > gap.length + 1) {
@@ -356,7 +353,7 @@ function stringifyIndent (key, value, stack, indent) {
       gap = mind
       return res
     case 'string':
-      return `"${strEscape(value)}"`
+      return '"' + strEscape(value) + '"'
     case 'number':
       // JSON numbers must be finite. Encode non-finite numbers as null.
       return isFinite(value) ? String(value) : 'null'
@@ -366,14 +363,14 @@ function stringifyIndent (key, value, stack, indent) {
 }
 
 // Supports only the replacer option
-function stringifyReplacerArr (key, value, stack, replacer) {
+function stringifyReplacerArr(key, value, stack, replacer) {
   var i, res
   // If the value has a toJSON method, call it to obtain a replacement value.
-  if (typeof value === 'object' && value !== null && typeof value.toJSON === 'function') {
+  if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value !== null && typeof value.toJSON === 'function') {
     value = value.toJSON(key)
   }
 
-  switch (typeof value) {
+  switch (typeof value === 'undefined' ? 'undefined' : _typeof(value)) {
     case 'object':
       if (value === null) {
         return 'null'
@@ -391,8 +388,8 @@ function stringifyReplacerArr (key, value, stack, replacer) {
         res = '['
         // Use null as placeholder for non-JSON values.
         for (i = 0; i < value.length - 1; i++) {
-          const tmp = stringifyReplacerArr(i, value[i], stack, replacer)
-          res += tmp !== undefined ? tmp : 'null'
+          const _tmp9 = stringifyReplacerArr(i, value[i], stack, replacer)
+          res += _tmp9 !== undefined ? _tmp9 : 'null'
           res += ','
         }
         const tmp = stringifyReplacerArr(i, value[i], stack, replacer)
@@ -411,12 +408,12 @@ function stringifyReplacerArr (key, value, stack, replacer) {
       for (i = 0; i < replacer.length; i++) {
         if (typeof replacer[i] === 'string' || typeof replacer[i] === 'number') {
           key = replacer[i]
-          const tmp = stringifyReplacerArr(key, value[key], stack, replacer)
-          if (tmp !== undefined) {
+          const _tmp10 = stringifyReplacerArr(key, value[key], stack, replacer)
+          if (_tmp10 !== undefined) {
             if (last) {
               res += ','
             }
-            res += `"${strEscape(key)}":${tmp}`
+            res += '"' + strEscape(key) + '":' + _tmp10
             last = true
           }
         }
@@ -425,7 +422,7 @@ function stringifyReplacerArr (key, value, stack, replacer) {
       stack.pop()
       return res
     case 'string':
-      return `"${strEscape(value)}"`
+      return '"' + strEscape(value) + '"'
     case 'number':
       // JSON numbers must be finite. Encode non-finite numbers as null.
       return isFinite(value) ? String(value) : 'null'
@@ -434,16 +431,16 @@ function stringifyReplacerArr (key, value, stack, replacer) {
   }
 }
 
-function stringifyReplacerFn (key, parent, stack, replacer) {
+function stringifyReplacerFn(key, parent, stack, replacer) {
   var i, res
   var value = parent[key]
   // If the value has a toJSON method, call it to obtain a replacement value.
-  if (typeof value === 'object' && value !== null && typeof value.toJSON === 'function') {
+  if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value !== null && typeof value.toJSON === 'function') {
     value = value.toJSON(key)
   }
   value = replacer.call(parent, key, value)
 
-  switch (typeof value) {
+  switch (typeof value === 'undefined' ? 'undefined' : _typeof(value)) {
     case 'object':
       if (value === null) {
         return 'null'
@@ -461,12 +458,12 @@ function stringifyReplacerFn (key, parent, stack, replacer) {
         res = '['
         // Use null as placeholder for non-JSON values.
         for (i = 0; i < value.length - 1; i++) {
-          const tmp = stringifyReplacerFn(i, value, stack, replacer)
-          res += tmp !== undefined ? tmp : 'null'
+          const _tmp12 = stringifyReplacerFn(i, value, stack, replacer)
+          res += _tmp12 !== undefined ? _tmp12 : 'null'
           res += ','
         }
-        const tmp = stringifyReplacerFn(i, value, stack, replacer)
-        res += tmp !== undefined ? tmp : 'null'
+        const _tmp11 = stringifyReplacerFn(i, value, stack, replacer)
+        res += _tmp11 !== undefined ? _tmp11 : 'null'
         res += ']'
         stack.pop()
         return res
@@ -481,12 +478,12 @@ function stringifyReplacerFn (key, parent, stack, replacer) {
       var last = false
       for (i = 0; i < keys.length - 1; i++) {
         key = keys[i]
-        const tmp = stringifyReplacerFn(key, value, stack, replacer)
-        if (tmp !== undefined) {
+        const _tmp13 = stringifyReplacerFn(key, value, stack, replacer)
+        if (_tmp13 !== undefined) {
           if (last === true) {
             res += ','
           }
-          res += `"${strEscape(key)}":${tmp}`
+          res += '"' + strEscape(key) + '":' + _tmp13
           last = true
         }
       }
@@ -496,13 +493,13 @@ function stringifyReplacerFn (key, parent, stack, replacer) {
         if (last === true) {
           res += ','
         }
-        res += `"${strEscape(key)}":${tmp}`
+        res += '"' + strEscape(key) + '":' + tmp
       }
       res += '}'
       stack.pop()
       return res
     case 'string':
-      return `"${strEscape(value)}"`
+      return '"' + strEscape(value) + '"'
     case 'number':
       // JSON numbers must be finite. Encode non-finite numbers as null.
       return isFinite(value) ? String(value) : 'null'
@@ -512,9 +509,9 @@ function stringifyReplacerFn (key, parent, stack, replacer) {
 }
 
 // Simple without any options
-function stringifySimple (key, value, stack) {
+function stringifySimple(key, value, stack) {
   var i, res
-  switch (typeof value) {
+  switch (typeof value === 'undefined' ? 'undefined' : _typeof(value)) {
     case 'object':
       if (value === null) {
         return 'null'
@@ -522,7 +519,7 @@ function stringifySimple (key, value, stack) {
       if (typeof value.toJSON === 'function') {
         value = value.toJSON(key)
         // Prevent calling `toJSON` again
-        if (typeof value !== 'object') {
+        if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object') {
           return stringifySimple(key, value, stack)
         }
         if (value === null) {
@@ -543,12 +540,12 @@ function stringifySimple (key, value, stack) {
         res = '['
         // Use null as placeholder for non-JSON values.
         for (i = 0; i < value.length - 1; i++) {
-          const tmp = stringifySimple(i, value[i], stack)
-          res += tmp !== undefined ? tmp : 'null'
+          const _tmp15 = stringifySimple(i, value[i], stack)
+          res += _tmp15 !== undefined ? _tmp15 : 'null'
           res += ','
         }
-        const tmp = stringifySimple(i, value[i], stack)
-        res += tmp !== undefined ? tmp : 'null'
+        const _tmp14 = stringifySimple(i, value[i], stack)
+        res += _tmp14 !== undefined ? _tmp14 : 'null'
         res += ']'
         stack.pop()
         return res
@@ -562,21 +559,21 @@ function stringifySimple (key, value, stack) {
       res = '{'
       for (i = 0; i < keys.length - 1; i++) {
         key = keys[i]
-        const tmp = stringifySimple(key, value[key], stack)
-        if (tmp !== undefined) {
-          res += `"${strEscape(key)}":${tmp},`
+        const _tmp16 = stringifySimple(key, value[key], stack)
+        if (_tmp16 !== undefined) {
+          res += '"' + strEscape(key) + '":' + _tmp16 + ','
         }
       }
       key = keys[i]
       const tmp = stringifySimple(key, value[key], stack)
       if (tmp !== undefined) {
-        res += `"${strEscape(key)}":${tmp}`
+        res += '"' + strEscape(key) + '":' + tmp
       }
       res += '}'
       stack.pop()
       return res
     case 'string':
-      return `"${strEscape(value)}"`
+      return '"' + strEscape(value) + '"'
     case 'number':
       // JSON numbers must be finite. Encode non-finite numbers as null.
       // Convert the numbers implicit to a string instead of explicit.
@@ -586,7 +583,7 @@ function stringifySimple (key, value, stack) {
   }
 }
 
-function insertSort (arr) {
+function insertSort(arr) {
   for (var i = 1; i < arr.length; i++) {
     const tmp = arr[i]
     var j = i
@@ -600,7 +597,9 @@ function insertSort (arr) {
   return arr
 }
 
-function stringify (value, replacer, spacer) {
+export function stringify(value: any,
+                          replacer?: (key: string, value: any) => any | (number | string)[] | null,
+                          spacer?: string | number): string {
   var i
   var indent = ''
   gap = ''
@@ -612,14 +611,14 @@ function stringify (value, replacer, spacer) {
       for (i = 0; i < spacer; i += 1) {
         indent += ' '
       }
-    // If the spacer parameter is a string, it will be used as the indent string.
+      // If the spacer parameter is a string, it will be used as the indent string.
     } else if (typeof spacer === 'string') {
       indent = spacer
     }
     if (indent !== '') {
       if (replacer !== undefined && replacer !== null) {
         if (typeof replacer === 'function') {
-          return stringifyFullFn('', { '': value }, [], replacer, indent)
+          return stringifyFullFn('', {'': value}, [], replacer, indent)
         }
         if (Array.isArray(replacer)) {
           return stringifyFullArr('', value, [], replacer, indent)
@@ -628,7 +627,7 @@ function stringify (value, replacer, spacer) {
       return stringifyIndent('', value, [], indent)
     }
     if (typeof replacer === 'function') {
-      return stringifyReplacerFn('', { '': value }, [], replacer)
+      return stringifyReplacerFn('', {'': value}, [], replacer)
     }
     if (Array.isArray(replacer)) {
       return stringifyReplacerArr('', value, [], replacer)

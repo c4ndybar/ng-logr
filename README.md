@@ -11,13 +11,6 @@ Install dependencies
 `npm install`
 
 
-Install dependencies for ng-logr
-
-```bash
-cd dist\ng-logr
-npm install
-```
-
 Start the server
 
 `ng serve`

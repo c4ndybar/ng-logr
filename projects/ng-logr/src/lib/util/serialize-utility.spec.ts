@@ -82,6 +82,7 @@ describe('serialize-utility', () => {
   })
 
   it('does not serialize DebugContext_ objects', () => {
+    // tslint:disable-next-line
     class DebugContext_ {
     }
 

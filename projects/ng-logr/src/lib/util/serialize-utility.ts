@@ -1,4 +1,4 @@
-import safeStringify from 'safe-stable-stringify'
+import * as safeStringify from '../vendor/safe-stable-stringify'
 
 export class SerializerUtility {
   public static stringify(obj): string {
@@ -24,17 +24,14 @@ export class SerializerUtility {
       return error
     }
 
-    function isDebugContext(obj) {
-      return obj && obj.constructor.name === 'DebugContext_'
+    function isDebugContext(theObj) {
+      return theObj && theObj.constructor.name === 'DebugContext_'
     }
 
     function getDebugContextSerializedValue() {
       return '[DebugContext_]'
     }
 
-    return (safeStringify as any)(obj, replacer)
+    return safeStringify.stringify(obj, replacer)
   }
-
-
 }
-
