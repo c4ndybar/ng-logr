@@ -95,12 +95,12 @@ export class AppModule {
 
 #### Send logs to the server
 
-Include the `HttpLogHandler` when defining your log handlers in your configuration options.  This log handler posts logs to your sever at the endpoint `/log`.  You can override the log post route by defining the option `postHttpRoute` as shown in the example below.
+Include the `HttpLogHandler` when defining your log handlers in your configuration options.  This log handler posts logs to your sever at the endpoint `/log`.  You can override the log post route by defining the option `httpPostRoute` as shown in the example below.
 ```typescript
 import {ConsoleLogHandler, HttpLogHandler} from 'ng-logr'
 
 const httpHandler = new HttpLogHandler({
-  postHttpRoute: 'serverLogRoute'
+  httpPostRoute: 'serverLogRoute'
 })
 const options: INgLogOptions = {
   logHandlers: [new ConsoleLogHandler(), httpHandler]
