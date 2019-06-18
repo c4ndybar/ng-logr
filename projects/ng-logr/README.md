@@ -1,6 +1,5 @@
 
 # Ng-logr
-**Currently in Beta**
 
 Angular logger that is designed to be simple and configurable.  Ships with the following features.
 - Two log handlers are provided.
@@ -12,11 +11,12 @@ Angular logger that is designed to be simple and configurable.  Ships with the f
 - Ability to provide custom log handlers or extend existing ones.
 
 ## Quick Start
-install the library
+
+#### Install the library
 
 `npm install --save ng-logr`
 
-Import `NgLogModule` into your app's root module.
+#### Import `NgLogModule` into your app's root module.
 ```typescript
 import {NgModule} from '@angular/core'
 import {NgLogModule} from 'ng-logr'
@@ -30,7 +30,7 @@ export class AppModule {
 }
 ```
 
-Use the `NgLog` service in your app to log stuff
+#### Use the `NgLog` service in your app to log stuff
 
 ```typescript
 import {Injectable} from '@angular/core'
@@ -45,7 +45,7 @@ export class MyService {
 }
 ```
 
-The NgLog interface is simple and provides only 5 logging methods.
+#### The NgLog interface is simple and provides only 5 logging methods.
 
 ```typescript
 interface NgLog {
@@ -161,7 +161,7 @@ const options: INgLogOptions = {
 
 This library is still in beta.  Contributions are more than welcome.  Some things to focus on...
 - Bug fixes.
-- Support previous versions of Angular (at least Angular 4+).  The library only supports Angular 6 currently.
+- Add support for other Angular versions (currently supports 6 - 8)
 - Make the logs fail silently (or log debug statements to the console if not in production mode).
 - Add a way to include contextual information posting logs from `HttpLogHandler` (i.e. browser version, device, os version, etc.)
 - Additional log handlers that are useful.
